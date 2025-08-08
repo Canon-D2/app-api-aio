@@ -1,0 +1,17 @@
+# DELETE ALL LIBRARY
+pip freeze | ForEach-Object { pip uninstall -y $_ }
+
+# EXPORT ALL LIBRARY CURRENCE TO REQUIREMENTS.TXT
+pip freeze > requirements.txt
+
+# DOCKER BUILT AND START (INCLUDE REQUIREMENTS)
+docker-compose build
+docker-compose up
+docker-compose up --build  # REBUILT
+
+# CONSTRUCTION DOCKER FOLDER
+dir -Force D:\app-api-aio
+
+# RABBITMQ NOT WORKING -> STOP -> START AGAIN
+rabbitmq-plugins enable rabbitmq_management
+net stop RabbitMQ && net start RabbitMQ

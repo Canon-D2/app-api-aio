@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    image: aio_app/api
+    restart: on-failure
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --proxy-headers --workers 2
+    volumes:
+      - ./:/opt/python-projects/app/
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - ./env/app.env
+    healthcheck:
+      test: ["CMD", "curl", "-s", "-f", "http://localhost:8000/docs || exit 1"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    depends_on:
+      db:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+
+  db:
+    image: mongo
+    restart: on-failure
+    volumes:
+      - ./database:/data/db
+    ports:
+      - 127.0.0.1:27018:27017
+    command: --quiet
+    healthcheck:
+      test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin --quiet | grep 1
+      interval: 30s
+      timeout: 30s
+      retries: 5
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: on-failure
+    ports:
+      - "5672:5672"     # AMQP port (message queue)
+      - "15672:15672"   # Web UI (http://localhost:15672)
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 10s
+      retries: 3
