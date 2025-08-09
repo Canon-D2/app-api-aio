@@ -1,9 +1,13 @@
+import os, asyncio
+from worker.emails.rabbitmq import RabbitMQHandler
+
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
 from app.modules.home.routers import router as home_router
 from app.modules.user.routers import router as user_router
 from app.modules.account.router import router as account_router
+
 
 app = FastAPI(
     title="APP-API-AIO",
@@ -48,3 +52,11 @@ def custom_openapi():
 
 # Apple function custom schema for app
 app.openapi = custom_openapi
+
+
+# Runing worker
+if __name__ == "__main__":
+    role = os.getenv("ROLE", "api")
+    if role == "worker":
+        rabbit = RabbitMQHandler()
+        asyncio.run(rabbit.consume())
