@@ -31,6 +31,8 @@ services:
     image: app-api-aio/worker
     restart: always
     command: python3 /opt/python-projects/app/main.py
+    environment:
+    - ROLE=worker
     volumes:
       - ./:/opt/python-projects/app/
       - ./video/:/opt/python-projects/app/video/

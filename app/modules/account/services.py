@@ -6,6 +6,7 @@ from app.auth.services import auth_services
 from .schemas import LoginRequest, ForgotPasswordRequest
 from .exception import ErrorCode
 from app.utils.helper import Helper
+from worker.emails.controllers import EmailController
 
 
 account_crud = BaseCRUD("users", engine_aio)
@@ -14,6 +15,7 @@ account_crud = BaseCRUD("users", engine_aio)
 class AccountService:
     def __init__(self, crud: BaseCRUD):
         self.crud = crud
+        self.email_controller = EmailController()
 
     async def login(self, data: LoginRequest):
         email = data.email
@@ -51,7 +53,13 @@ class AccountService:
                 }
             }
         )
-        # Function send mail: OTP
+        # Call send OTP mail worker
+        await self.email_controller.send_email({
+            "email": user["email"],
+            "fullname": user.get("name", ""),
+            "otp": str(otp)
+        })
+
         return {"message": "OTP generated and valid for 5 minutes"}
     
     async def forgot_password(self, data: ForgotPasswordRequest):
