@@ -1,20 +1,21 @@
-version: '3.8'
+version: "3.8"
 
 services:
   api:
     build: .
-    image: aio_app/api
+    image: app-api-aio/api
     restart: on-failure
-    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload --proxy-headers --workers 2
+    command: uvicorn main:app --reload --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers
     volumes:
       - ./:/opt/python-projects/app/
+      - ./video/:/opt/python-projects/app/video/
     ports:
       - "127.0.0.1:8000:8000"
     env_file:
       - ./env/app.env
     healthcheck:
-      test: ["CMD", "curl", "-s", "-f", "http://localhost:8000/docs || exit 1"]
-      interval: 30s
+      test: ["CMD", "sh", "-c", "curl -s -f http://localhost:8000/v1/ping || exit 1"]
+      interval: 60s
       timeout: 3s
       retries: 3
     depends_on:
@@ -22,29 +23,65 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  worker:
+    build: .
+    image: app-api-aio/worker
+    restart: always
+    command: python3 /opt/python-projects/app/main.py
+    volumes:
+      - ./:/opt/python-projects/app/
+      - ./video/:/opt/python-projects/app/video/
+    env_file:
+      - ./env/worker.env
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      db:
+        condition: service_healthy
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    restart: on-failure
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    healthcheck:
+      test: rabbitmq-diagnostics check_port_connectivity
+      interval: 10s
+      timeout: 10s
+      retries: 3
+
+  redis:
+    image: redis:7.2-alpine
+    restart: on-failure
+    env_file:
+      - ./env/redis.env
+    command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD --appendonly no --save 60 1"
+    ports:
+      - "6379:6379"
+    volumes:
+      - ./caching:/data
+    healthcheck:
+      test: [ "CMD", "redis-cli", "-a", "$$REDIS_HOST_PASSWORD", "PING" ]
+      interval: 10s
+      timeout: 10s
+      retries: 3
 
   db:
     image: mongo
     restart: on-failure
     volumes:
       - ./database:/data/db
-    ports:
-      - 127.0.0.1:27018:27017
     command: --quiet
+    ports:
+      - "127.0.0.1:27018:27017"
     healthcheck:
       test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin --quiet | grep 1
-      interval: 30s
-      timeout: 30s
-      retries: 5
-
-  rabbitmq:
-    image: rabbitmq:3-management-alpine
-    restart: on-failure
-    ports:
-      - "5672:5672"     # AMQP port (message queue)
-      - "15672:15672"   # Web UI (http://localhost:15672)
-    healthcheck:
-      test: rabbitmq-diagnostics check_port_connectivity
-      interval: 10s
-      timeout: 10s
-      retries: 3
+      interval: 60s
+      timeout: 60s
+      retries: 6

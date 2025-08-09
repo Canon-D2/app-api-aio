@@ -1,28 +1,28 @@
 # Base image
 FROM python:3.12-alpine
 
-# Set working directory
+# Set work directory
 WORKDIR /opt/python-projects/app
 
-# Set environment variables
-ENV PYTHONDONTWRITEBYTECODE 1
-ENV PYTHONUNBUFFERED 1
+# Env settings
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
 
-# Install dependencies
+# Install build dependencies
 RUN set -eux \
     && apk add --no-cache --virtual .build-deps build-base \
     libressl-dev libffi-dev gcc musl-dev python3-dev \
     && pip install --upgrade pip setuptools wheel \
-    && apk add curl openssl \
     && rm -rf /root/.cache/pip
 
-# Copy requirements and install
-COPY ./requirements.txt .
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Copy requirements file
+COPY ./requirements.txt /opt/python-projects/app/requirements.txt
 
-# Copy project source code
-COPY . .
+# Install Python dependencies
+RUN pip install -r /opt/python-projects/app/requirements.txt
 
-# Optional: expose FastAPI port
-EXPOSE 8000
+# Install extra tools for healthcheck and SSL
+RUN apk add --no-cache curl openssl
+
+# Copy project files
+COPY . /opt/python-projects/app/
