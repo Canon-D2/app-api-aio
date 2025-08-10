@@ -1,4 +1,3 @@
-# rabbitmq.py
 import json, aio_pika, traceback
 from .config import RABBITMQ_URL
 from .models import EmailData

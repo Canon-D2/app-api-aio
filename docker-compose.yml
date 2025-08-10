@@ -30,9 +30,9 @@ services:
     build: .
     image: app-api-aio/worker
     restart: always
-    command: python3 /opt/python-projects/app/main.py
+    command: python3 /opt/python-projects/app/worker/worker_main.py
     environment:
-    - ROLE=worker
+    - PYTHONPATH=/opt/python-projects/app
     volumes:
       - ./:/opt/python-projects/app/
       - ./video/:/opt/python-projects/app/video/
