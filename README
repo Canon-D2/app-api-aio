@@ -7,7 +7,7 @@ pip freeze > requirements.txt
 # DOCKER BUILT AND START (INCLUDE REQUIREMENTS)
 docker-compose build
 docker-compose up
-docker-compose up --build  # REBUILT
+docker-compose up --no-log-prefix  
 
 # CONSTRUCTION DOCKER FOLDER
 dir -Force D:\app-api-aio
@@ -15,3 +15,6 @@ dir -Force D:\app-api-aio
 # RABBITMQ NOT WORKING -> STOP -> START AGAIN
 rabbitmq-plugins enable rabbitmq_management
 net stop RabbitMQ && net start RabbitMQ
+
+# URL REDIS CONNECT
+redis://:APP-API-AIO@127.0.0.1:6379/0

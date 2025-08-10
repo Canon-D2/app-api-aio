@@ -17,6 +17,7 @@ app.include_router(home_router)
 app.include_router(user_router)
 app.include_router(account_router)
 
+
 # ✅ Swagger JWT config
 def custom_openapi():
     if app.openapi_schema:
@@ -38,7 +39,7 @@ def custom_openapi():
         }
     }
 
-    # Apple BearerAuth request for all Paths
+    # BearerAuth request for all Paths
     for path in openapi_schema["paths"]:
         for method in openapi_schema["paths"][path]:
             if method in ["get", "post", "put", "delete", "patch"]:  # tránh lỗi OPTIONS
@@ -47,5 +48,6 @@ def custom_openapi():
     app.openapi_schema = openapi_schema
     return app.openapi_schema
 
-# Apple function custom schema for app
+
+# App function custom schema for app
 app.openapi = custom_openapi
