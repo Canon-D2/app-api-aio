@@ -1,6 +1,3 @@
-import sentry_sdk
-from worker.sentry.config import DSN_SENTRY, ENVIRONMENT
-
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
@@ -15,14 +12,6 @@ app = FastAPI(
     description="API backend with JWT authentication",
     version="1.0.0"
 )
-
-# Initialize Sentry
-sentry_sdk.init(
-    dsn=DSN_SENTRY,
-    environment=ENVIRONMENT,
-    traces_sample_rate=1.0,
-)
-
 
 # Subscribe router
 app.include_router(home_router)

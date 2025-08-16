@@ -1,3 +1,5 @@
+# APP-API-AIO
+
 # DELETE ALL LIBRARY
 pip freeze | ForEach-Object { pip uninstall -y $_ }
 
@@ -6,7 +8,6 @@ pip freeze > requirements.txt
 
 # DOCKER BUILT AND START (INCLUDE REQUIREMENTS)
 docker-compose build
-docker-compose up
 docker-compose up --no-log-prefix  
 
 # CONSTRUCTION DOCKER FOLDER
@@ -18,3 +19,6 @@ net stop RabbitMQ && net start RabbitMQ
 
 # URL REDIS CONNECT
 redis://:APP-API-AIO@127.0.0.1:6379/0
+
+# RUN PS1 BACKUP DB
+.\dump_db.ps1
