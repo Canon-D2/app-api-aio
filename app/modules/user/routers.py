@@ -4,34 +4,42 @@ from .controllers import UserController
 from typing import Optional
 from .exception import ErrorCode
 
+
 router = APIRouter(prefix="/v1/users", tags=["users"])
 controller = UserController()
 
 
-@router.post("", response_model=str)
+@router.post("", status_code=201, responses={
+                201: {"model": schemas.UserCreate, "description": "Post items success"}})
 async def create_user(data: schemas.UserCreate):
-    return await controller.create(data.model_dump())
+    result = await controller.create(data.model_dump())
+    return result
 
 
-@router.get("/{user_id}", response_model=schemas.UserResponse)
+@router.get("/{user_id}", status_code=200, responses={
+                200: {"model": schemas.UserResponse, "description": "Get items success"}})
 async def get_user(user_id: str = Path(...)):
-    user = await controller.get_by_id(user_id)
-    if not user:
+    result = await controller.get_by_id(user_id)
+    if not result:
         raise ErrorCode.InvalidUserId()
-    return user
+    return result
 
 
-@router.put("/{user_id}", response_model=bool)
+@router.put("/{user_id}", status_code=200, responses={
+                200: {"model": bool, "description": "Put items success"}})
 async def update_user(user_id: str, data: schemas.UserUpdate):
-    return await controller.update(user_id, data.model_dump(exclude_unset=True))
+    result = await controller.update(user_id, data.model_dump(exclude_unset=True))
+    return result
 
 
-@router.delete("/{user_id}", response_model=bool)
+@router.delete("/{user_id}", status_code=204)
 async def delete_user(user_id: str):
-    return await controller.delete(user_id)
+    result = await controller.delete(user_id)
+    return result
 
 
-@router.get("", response_model=schemas.PaginatedUserResponse)
+@router.get("", status_code=200, responses={
+                200: {"model": schemas.PaginatedUserResponse, "description": "Get items success"}})
 async def list_users(
     page: int = Query(1, gt=0),
     limit: int = Query(10, le=100),
@@ -43,4 +51,5 @@ async def list_users(
             {"email": {"$regex": search, "$options": "i"}},
             {"phone": {"$regex": search, "$options": "i"}},
         ]
-    return await controller.search(query, page, limit)
+    result = await controller.search(query, page, limit)
+    return result

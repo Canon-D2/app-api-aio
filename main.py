@@ -1,9 +1,13 @@
+import sentry_sdk
+from worker.sentry.config import DSN_SENTRY, ENVIRONMENT
+
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 
 from app.modules.home.routers import router as home_router
 from app.modules.user.routers import router as user_router
 from app.modules.account.router import router as account_router
+from worker.sentry.routers import router as sentry_router
 
 
 app = FastAPI(
@@ -12,10 +16,19 @@ app = FastAPI(
     version="1.0.0"
 )
 
+# Initialize Sentry
+sentry_sdk.init(
+    dsn=DSN_SENTRY,
+    environment=ENVIRONMENT,
+    traces_sample_rate=1.0,
+)
+
+
 # Subscribe router
 app.include_router(home_router)
 app.include_router(user_router)
 app.include_router(account_router)
+app.include_router(sentry_router)
 
 
 # ✅ Swagger JWT config
@@ -35,7 +48,8 @@ def custom_openapi():
         "BearerAuth": {
             "type": "http",
             "scheme": "bearer",
-            "bearerFormat": "JWT"
+            "bearerFormat": "JWT",
+            "description": "Enter: **'Bearer &lt;JWT&gt;'**, where JWT is the access token"
         }
     }
 
