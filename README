@@ -22,3 +22,6 @@ redis://:APP-API-AIO@127.0.0.1:6379/0
 
 # RUN PS1 BACKUP DB
 .\dump_db.ps1
+
+# CREATE CHANNEL AND GET CHANNEL ID BY
+https://api.telegram.org/bot<BOT_TOKEN>/getUpdates
