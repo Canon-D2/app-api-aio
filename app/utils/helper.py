@@ -1,4 +1,5 @@
 import time, datetime
+import unicodedata, re
 
 class Helper:
     @staticmethod
@@ -27,3 +28,19 @@ class Helper:
         current_date = datetime.datetime.now()
         future_date = current_date + datetime.timedelta(days=days_to_add)
         return future_date.timestamp() 
+    
+    @staticmethod
+    def convert_slug(text: str) -> str:
+        """Convert a string with accents and special characters into a URL-friendly slug"""
+        # Normalize unicode to remove accents (e.g., é -> e, ư -> u)
+        text = unicodedata.normalize("NFD", text)
+        text = text.encode("ascii", "ignore").decode("utf-8")
+        text = text.lower()
+        
+        # Replace non-alphanumeric characters with hyphens
+        text = re.sub(r"[^a-z0-9]+", "-", text)
+        
+        # Remove leading/trailing hyphens
+        text = text.strip("-")
+        
+        return text
