@@ -44,3 +44,18 @@ class Helper:
         text = text.strip("-")
         
         return text
+
+    @staticmethod
+    def timestamp_to_date(ts: float, fmt: str = "%d-%m-%Y %H:%M:%S") -> str:
+        """
+        Convert timestamp (e.g., 1755688756) to date string "20-08-2025 22:59:16"
+        """
+        return datetime.datetime.fromtimestamp(float(ts)).strftime(fmt)
+
+    @staticmethod
+    def date_to_timestamp(date_str: str, fmt: str = "%d-%m-%Y %H:%M:%S") -> float:
+        """
+        Convert date string "20-08-2025 22:59:16" to timestamp (e.g., 1755688756.0)
+        """
+        dt = datetime.datetime.strptime(date_str, fmt)
+        return dt.timestamp()

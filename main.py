@@ -6,6 +6,7 @@ from app.modules.user.routers import router as user_router
 from app.modules.account.router import router as account_router
 from app.modules.agent.routers import router as agent_router
 from worker.sentry.routers import router as sentry_router
+from app.modules.appsheet.routers import router as appsheet_router
 
 
 app = FastAPI(
@@ -20,6 +21,7 @@ app.include_router(user_router)
 app.include_router(account_router)
 app.include_router(sentry_router)
 app.include_router(agent_router)
+app.include_router(appsheet_router)
 
 
 # ✅ Swagger JWT config
