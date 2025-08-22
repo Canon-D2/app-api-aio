@@ -8,28 +8,28 @@ class BaseCRUD:
         self.db = db
         self.collection = db[collection_name]
 
-    def _get_sort(self, sort_field: str, is_desc: bool):
-        return [(sort_field, DESCENDING if is_desc else ASCENDING)]
-
     async def create(self, data: dict):
         data["created_at"] = Helper.get_timestamp()
-        result = await self.collection.insert_one(data)
-        return str(result.inserted_id)
+        user = await self.collection.insert_one(data)
+        result = await self.collection.find_one({"_id": user.inserted_id})
+        return Helper.convert_object_id(result)
 
     async def get_by_id(self, _id: str):
-        doc = await self.collection.find_one({"_id": ObjectId(_id)})
-        return Helper.convert_object_id(doc) if doc else None
+        result = await self.collection.find_one({"_id": ObjectId(_id)})
+        return Helper.convert_object_id(result) if result else None
 
     async def update_by_id(self, _id: str, data: dict):
         data["updated_at"] = Helper.get_timestamp()
-        result = await self.collection.update_one(
+        user = await self.collection.update_one(
             {"_id": ObjectId(_id)}, {"$set": data}
         )
-        return result.modified_count > 0
+        result = await self.collection.find_one({"_id": ObjectId(_id)})
+        result = Helper.convert_object_id(result)
+        return result
 
     async def delete_by_id(self, _id: str):
         result = await self.collection.delete_one({"_id": ObjectId(_id)})
-        return result.deleted_count > 0
+        return {"status": "success"} if result.deleted_count > 0 else {"status": "failed"}
 
     async def search(
         self,
@@ -48,13 +48,19 @@ class BaseCRUD:
         )
         results = [Helper.convert_object_id(doc) async for doc in cursor]
         total = await self.collection.count_documents(query)
-        return {
+        response =  {
             "total": total,
             "page": page,
             "limit": limit,
             "total_pages": math.ceil(total / limit),
             "results": results,
         }
+        return response
     
     async def get_one(self, query: dict):
-        return await self.collection.find_one(query)
+        result = await self.collection.find_one(query)
+        return result
+    
+    def _get_sort(self, sort_field: str, is_desc: bool):
+        result = [(sort_field, DESCENDING if is_desc else ASCENDING)]
+        return result

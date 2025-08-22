@@ -1,5 +1,5 @@
+from .config import *
 from motor.motor_asyncio import AsyncIOMotorClient
-from .config import AIO_DATABASE_NAME, LOGS_DATABASE_NAME, TRACKING_DATABASE_NAME
 
 
 class Engine(object):

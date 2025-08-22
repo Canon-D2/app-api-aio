@@ -73,7 +73,7 @@ services:
     image: redis:7.2-alpine
     restart: on-failure
     env_file:
-      - ./env/redis.env
+      - ./env/worker.env
     command: /bin/sh -c "redis-server --requirepass $$REDIS_HOST_PASSWORD --appendonly no --save 60 1"
     ports:
       - "6379:6379"

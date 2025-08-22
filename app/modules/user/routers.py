@@ -10,10 +10,10 @@ controller = UserController()
 
 
 @router.post("", status_code=201, responses={
-                201: {"model": schemas.UserCreate, "description": "Post items success"}})
+                201: {"model": schemas.UserResponse, "description": "Create items success"}})
 async def create_user(data: schemas.UserCreate):
     result = await controller.create(data.model_dump())
-    return result
+    return schemas.UserResponse(**result)
 
 
 @router.get("/{user_id}", status_code=200, responses={
@@ -26,13 +26,14 @@ async def get_user(user_id: str = Path(...)):
 
 
 @router.put("/{user_id}", status_code=200, responses={
-                200: {"model": bool, "description": "Put items success"}})
+                200: {"model": schemas.UserResponse, "description": "Edit items success"}})
 async def update_user(user_id: str, data: schemas.UserUpdate):
     result = await controller.update(user_id, data.model_dump(exclude_unset=True))
-    return result
+    return schemas.UserResponse(**result)
 
 
-@router.delete("/{user_id}", status_code=204)
+@router.delete("/{user_id}", status_code=200, responses={
+                200: {"description": "Delete items success"}})
 async def delete_user(user_id: str):
     result = await controller.delete(user_id)
     return result

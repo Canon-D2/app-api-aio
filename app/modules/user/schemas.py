@@ -1,36 +1,44 @@
-from pydantic import BaseModel, EmailStr
-from typing import Optional, List
+from pydantic import BaseModel, EmailStr, Field
+from typing import Optional, List, Literal
 
 
 class UserCreate(BaseModel):
+    fullname: str
     email: EmailStr
     password: str
-    fullname: str
-    role: str
-    phone: Optional[str]
-    gender: Optional[str]
-    address: Optional[str]
+    permission: Literal["admin", "member", "vip", "staff"]
+    gender: Literal["male", "female", "other"]
+    birthday: float
+    phone: str  
+    address: str
+    company: Optional[str] = None
+    tax_code: Optional[str] = None
 
 
 class UserUpdate(BaseModel):
-    fullname: Optional[str]
-    password: Optional[str]
-    role: Optional[str]
-    phone: Optional[str]
-    gender: Optional[str]
-    address: Optional[str]
+    fullname: Optional[str] = None
+    password: Optional[str] = None
+    permission: Optional[Literal["admin", "member", "vip", "staff"]] = None
+    gender: Optional[Literal["male", "female", "other"]] = None
+    birthday: Optional[float] = None
+    phone: Optional[str] = None  
+    address: Optional[str] = None
+    company: Optional[str] = None
+    tax_code: Optional[str] = None
 
 
 class UserResponse(BaseModel):
-    _id: str
+    id: str = Field(alias="_id")
+    fullname: Optional[str]
     email: EmailStr
-    fullname: str
-    role: str
-    phone: Optional[str]
+    # password: Optional[str]
+    permission: Optional[str]
     gender: Optional[str]
+    birthday: Optional[float]
+    phone: Optional[str]
     address: Optional[str]
-    created_at: Optional[float] = None
-    updated_at: Optional[float] = None
+    company: Optional[str] = None
+    tax_code: Optional[str] = None
 
 
 class PaginatedUserResponse(BaseModel):
