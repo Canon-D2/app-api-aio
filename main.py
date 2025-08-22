@@ -5,6 +5,7 @@ from worker.sentry.config import DSN_SENTRY, ENVIRONMENT
 
 from app.modules.home.routers import router as home_router
 from app.modules.user.routers import router as user_router
+from app.modules.product.routers import router as product_router
 from app.modules.account.router import router as account_router
 from app.modules.agent.routers import router as agent_router
 from worker.sentry.routers import router as sentry_router
@@ -32,6 +33,7 @@ sentry_sdk.init(
 # Subscribe router
 app.include_router(home_router)
 app.include_router(user_router)
+app.include_router(product_router)
 app.include_router(account_router)
 app.include_router(sentry_router)
 app.include_router(agent_router)

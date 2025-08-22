@@ -30,3 +30,15 @@ class UserServices:
             data["password"] = (await auth_services.hash_password(data["password"])).decode()
 
         return await self.crud.update_by_id(_id, data)
+    
+    async def get(self, _id):
+        result = await self.crud.get_by_id(_id)
+        return result
+
+    async def delete(self, _id):
+        result = await self.crud.delete_by_id(_id)
+        return result
+
+    async def search(self, query: dict, page: int, limit: int):
+        result = await self.crud.search(query, page, limit)
+        return result

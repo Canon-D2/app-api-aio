@@ -1,5 +1,6 @@
 import time, datetime
 import unicodedata, re
+from bson import ObjectId
 
 class Helper:
     @staticmethod
@@ -11,6 +12,14 @@ class Helper:
         if doc and "_id" in doc:
             doc["_id"] = str(doc["_id"])
         return doc
+    
+    @staticmethod
+    def is_object_id(id: str) -> bool:
+        try:
+            ObjectId(id)
+            return True
+        except Exception:
+            return False
 
     @staticmethod
     async def is_email_exists(crud, email: str, exclude_id: str = None) -> bool:

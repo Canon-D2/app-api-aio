@@ -19,7 +19,7 @@ async def create_user(data: schemas.UserCreate):
 @router.get("/{user_id}", status_code=200, responses={
                 200: {"model": schemas.UserResponse, "description": "Get items success"}})
 async def get_user(user_id: str = Path(...)):
-    result = await controller.get_by_id(user_id)
+    result = await controller.get(user_id)
     if not result:
         raise ErrorCode.InvalidUserId()
     return result
