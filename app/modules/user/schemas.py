@@ -1,12 +1,12 @@
-from pydantic import BaseModel, EmailStr, Field
 from typing import Optional, List, Literal
+from pydantic import BaseModel, EmailStr, Field
 
 
 class UserCreate(BaseModel):
     fullname: str
     email: EmailStr
     password: str
-    permission: Literal["admin", "member", "vip", "staff"]
+    permission: Literal["admin", "member", "memvip", "staff"]
     gender: Literal["male", "female", "other"]
     birthday: float
     phone: str  
@@ -18,7 +18,7 @@ class UserCreate(BaseModel):
 class UserUpdate(BaseModel):
     fullname: Optional[str] = None
     password: Optional[str] = None
-    permission: Optional[Literal["admin", "member", "vip", "staff"]] = None
+    permission: Optional[Literal["admin", "member", "memvip", "staff"]] = None
     gender: Optional[Literal["male", "female", "other"]] = None
     birthday: Optional[float] = None
     phone: Optional[str] = None  

@@ -20,7 +20,7 @@ class BaseCRUD:
 
     async def update_by_id(self, _id: str, data: dict):
         data["updated_at"] = Helper.get_timestamp()
-        user = await self.collection.update_one(
+        await self.collection.update_one(
             {"_id": ObjectId(_id)}, {"$set": data}
         )
         result = await self.collection.find_one({"_id": ObjectId(_id)})
