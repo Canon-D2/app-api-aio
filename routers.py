@@ -5,8 +5,10 @@ from app.modules.user.routers import router as user_router
 from app.modules.product.routers import router as product_router
 from app.modules.account.router import router as account_router
 from app.modules.agent.routers import router as agent_router
-from worker.sentry.routers import router as sentry_router
 from app.modules.appsheet.routers import router as appsheet_router
+from app.modules.invoices.routers import router as invoice_router
+from worker.sentry.routers import router as sentry_router
+from worker.redis.routers import router as redis_router
 
 
 api_router = APIRouter()
@@ -17,5 +19,7 @@ api_router.include_router(user_router)
 api_router.include_router(product_router)
 api_router.include_router(account_router)
 api_router.include_router(agent_router)
-api_router.include_router(sentry_router)
 api_router.include_router(appsheet_router)
+api_router.include_router(invoice_router)
+api_router.include_router(sentry_router)
+api_router.include_router(redis_router)

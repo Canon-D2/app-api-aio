@@ -3,7 +3,7 @@ from .schemas import ReportRequest
 from .controllers import AppSheetController
 
 
-router = APIRouter(prefix="/v1/appsheet", tags=["appsheet"])
+router = APIRouter(prefix="/v1/appsheet", tags=["app-sheet"])
 appsheet_controller = AppSheetController()
 
 

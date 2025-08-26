@@ -1,9 +1,9 @@
 PERMISSIONS = {
     "admin": [
-        "/v1/account/admin",
-        "/v1/account/customer",
+       "/v1/home/database/export", 
+        "/v1/account/get-me",
     ],
     "customer": [
-        "/v1/account/customer",
+        "/v1/account/get-me",
     ]
 }

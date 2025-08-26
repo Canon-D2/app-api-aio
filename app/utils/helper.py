@@ -4,8 +4,22 @@ from bson import ObjectId
 
 class Helper:
     @staticmethod
+    def _key(user_id: str) -> str:
+        return f"cart:{user_id}"
+    
+    @staticmethod
+    def _recalc(cart: dict) -> dict:
+        total_items = sum(it.quantity for it in cart.items)
+        total_price = sum(it.price * it.quantity for it in cart.items)
+        cart.total_items = total_items
+        cart.total_price = total_price
+        cart.last_update = Helper.get_timestamp()
+        return cart
+    
+    @staticmethod
     def get_timestamp() -> float:
-        return time.time()
+        timestamp = int(time.time())
+        return timestamp
 
     @staticmethod
     def convert_object_id(doc: dict) -> dict:
@@ -56,15 +70,11 @@ class Helper:
 
     @staticmethod
     def timestamp_to_date(ts: float, fmt: str = "%d-%m-%Y %H:%M:%S") -> str:
-        """
-        Convert timestamp (e.g., 1755688756) to date string "20-08-2025 22:59:16"
-        """
+        # Convert timestamp (e.g., 1755688756) to date string "20-08-2025 22:59:16"
         return datetime.datetime.fromtimestamp(float(ts)).strftime(fmt)
 
     @staticmethod
     def date_to_timestamp(date_str: str, fmt: str = "%d-%m-%Y %H:%M:%S") -> float:
-        """
-        Convert date string "20-08-2025 22:59:16" to timestamp (e.g., 1755688756.0)
-        """
+        # Convert date string "20-08-2025 22:59:16" to timestamp (e.g., 1755688756.0)
         dt = datetime.datetime.strptime(date_str, fmt)
         return dt.timestamp()

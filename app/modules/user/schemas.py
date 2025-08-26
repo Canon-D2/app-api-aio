@@ -9,6 +9,7 @@ class UserCreate(BaseModel):
     permission: Literal["admin", "member", "memvip", "staff"]
     gender: Literal["male", "female", "other"]
     birthday: float
+    avatar: Optional[str] = None
     phone: str  
     address: str
     company: Optional[str] = None
@@ -21,6 +22,7 @@ class UserUpdate(BaseModel):
     permission: Optional[Literal["admin", "member", "memvip", "staff"]] = None
     gender: Optional[Literal["male", "female", "other"]] = None
     birthday: Optional[float] = None
+    avatar: Optional[str] = None
     phone: Optional[str] = None  
     address: Optional[str] = None
     company: Optional[str] = None
@@ -35,6 +37,7 @@ class UserResponse(BaseModel):
     permission: Optional[str]
     gender: Optional[str]
     birthday: Optional[float]
+    avatar: Optional[str] = None
     phone: Optional[str]
     address: Optional[str]
     company: Optional[str] = None

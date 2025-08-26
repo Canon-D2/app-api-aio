@@ -4,17 +4,17 @@ from typing import Optional
 from .exception import ErrorCode
 from .controllers import ProductController
 
-router = APIRouter(prefix="/v1/products", tags=["products"])
+router = APIRouter(prefix="/v1/product", tags=["product"])
 controller = ProductController()
 
 
-@router.post("", status_code=201, responses={
+@router.post("/create", status_code=201, responses={
                 201: {"model": schemas.ProductResponse, "description": "Create items success"}})
 async def create_product(data: schemas.ProductCreate):
     result = await controller.create(data.model_dump())
     return schemas.ProductResponse(**result)
 
-@router.get("/{product_id}", status_code=200, responses={
+@router.get("/get/{product_id}", status_code=200, responses={
                 200: {"model": schemas.ProductResponse, "description": "Get items success"}})
 async def get_product(product_id: str = Path(...)):
     result = await controller.get(product_id)
@@ -22,19 +22,19 @@ async def get_product(product_id: str = Path(...)):
         raise ErrorCode.InvalidProductId()
     return result
 
-@router.put("/{product_id}", status_code=200, responses={
+@router.put("/edit/{product_id}", status_code=200, responses={
                 200: {"model": schemas.ProductResponse, "description": "Edit items success"}})
 async def update_product(product_id: str, data: schemas.ProductUpdate):
     result = await controller.update(product_id, data.model_dump(exclude_unset=True))
     return schemas.ProductResponse(**result)
 
-@router.delete("/{product_id}", status_code=200, responses={
+@router.delete("/delete/{product_id}", status_code=200, responses={
                 200: {"description": "Delete items success"}})
 async def delete_user(product_id: str):
     result = await controller.delete(product_id)
     return result
 
-@router.get("", status_code=200, responses={
+@router.get("/search", status_code=200, responses={
                 200: {"model": schemas.PaginatedProductResponse, "description": "Get items success"}})
 async def list_products(
     page: int = Query(1, gt=0, description="Số trang"),
@@ -60,19 +60,19 @@ async def list_products(
     result = await controller.search(query, page, limit)
     return result
 
-@router.post("/serials/{product_id}", status_code=200, responses={
+@router.post("/serials/add/{product_id}", status_code=200, responses={
                 200: {"description": "Create items success"}})
 async def add_serial(product_id: str, data: schemas.SerialCreate):
     result = await controller.add_serial(product_id, data.number, data.status)
     return result
 
-@router.put("/serials/{product_id}", status_code=200, responses={
+@router.put("/serials/edit/{product_id}", status_code=200, responses={
                 200: {"description": "Edit items success"}})
 async def update_serial(product_id: str, data: schemas.SerialUpdate):
     result = await controller.update_serial(product_id, data.number_old, data.number_new, data.status_new)
     return result
 
-@router.delete("/serials/{product_id}", status_code=200, responses={
+@router.delete("/serials/delete/{product_id}", status_code=200, responses={
                 200: {"description": "Delete items success"}})
 async def delete_serial(product_id: str, data: schemas.SerialDelete):
     result = await controller.delete_serial(product_id, data.number)

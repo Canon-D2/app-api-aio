@@ -10,11 +10,11 @@ sentry_controller = SentryController()
 @router.get("/bug", status_code=500, responses={
                 500: {"description": "Test sentry success"}})
 async def test_bug():
-    test = 1 / 0
-    return test
+    result = 1 / 0
+    return result
 
 
-@router.post("/issues", status_code=201, responses={
+@router.post("/issue", status_code=201, responses={
                 201: {"model": schemas.Response, "description": "Post items success"}})
 async def capture_issues(data: dict):
     result = await sentry_controller.capture_issues(data)
