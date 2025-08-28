@@ -1,13 +1,14 @@
 import json
 from typing import Optional, Dict, Any, List
-
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
 
-from .schemas import CartResponse, CartItem, AddCart, EditCart, DeleteCart
+from .schemas import *
 from .config import REDIS_URL
 from .exception import ErrorCode
 from app.utils.helper import Helper
+from app.modules.user.services import user_crud
+from app.modules.product.services import product_crud
 
 
 class CartService:
@@ -27,7 +28,7 @@ class CartService:
 
         obj = json.loads(data)
         items = [CartItem(**it) for it in obj.get("items", [])]
-        return CartResponse(
+        result = CartResponse(
             user_id=obj.get("user_id"),
             items=items,
             address=obj.get("address"),
@@ -37,6 +38,7 @@ class CartService:
             last_update=obj.get("last_update"),
             type_vat=obj.get("type_vat"),
         )
+        return result
 
     async def _save_cart(self, cart: CartResponse) -> Dict[str, Any]:
         cart = Helper._recalc(cart)
@@ -47,6 +49,12 @@ class CartService:
         return cart.dict()
 
     async def add_item(self, user_id: str, data: AddCart) -> Dict[str, Any]:
+        user = await user_crud.get_by_id(user_id)
+        product =  await product_crud.get_by_id(data.item.product_id)
+
+        if not (user and product):
+            raise ErrorCode.DataNotDuplicate()
+
         cart = await self._load_cart(user_id, required=False) or CartResponse(user_id=user_id)
 
         item = data.item
@@ -71,6 +79,12 @@ class CartService:
         return await self._save_cart(cart)
 
     async def edit(self, user_id: str, data: EditCart) -> Dict[str, Any]:
+        user = await user_crud.get_by_id(user_id)
+        product =  await product_crud.get_by_id(data.item.product_id)
+        
+        if not (user and product):
+            raise ErrorCode.DataNotDuplicate()
+        
         cart = await self._load_cart(user_id, required=True)
 
         if data.product_id:
@@ -114,7 +128,9 @@ class CartService:
         return await self._save_cart(cart)
 
     async def get_cart(self, user_id: str) -> Dict[str, Any]:
-        return (await self._load_cart(user_id, required=True)).dict()
+        result = (await self._load_cart(user_id, required=True)).dict()
+        return result
 
     async def list_items(self, user_id: str) -> List[Dict[str, Any]]:
-        return [it.dict() for it in (await self._load_cart(user_id, required=True)).items]
+        result = [it.dict() for it in (await self._load_cart(user_id, required=True)).items]
+        return result

@@ -3,6 +3,7 @@ from app.utils.helper import Helper
 from . exception import ErrorCode
 from app.db.engine import engine_aio
 from worker.redis.services import CartService
+from worker.telegram.services import invoice_bot
 
 
 invoice_crud = BaseCRUD("invoices", engine_aio)
@@ -34,6 +35,7 @@ class InvoiceServices:
 
         result = await self.crud.create(invoice)
 
+        await invoice_bot.send_telegram(invoice)
         await self.cart_service.redis.delete(Helper._key(user_id))
 
         return result
