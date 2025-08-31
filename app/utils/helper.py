@@ -1,8 +1,10 @@
-import time, datetime
 import unicodedata, re
 from bson import ObjectId
+import time, datetime, random, string
+
 
 class Helper:
+    
     @staticmethod
     def _key(user_id: str) -> str:
         return f"cart:{user_id}"
@@ -78,3 +80,10 @@ class Helper:
         # Convert date string "20-08-2025 22:59:16" to timestamp (e.g., 1755688756.0)
         dt = datetime.datetime.strptime(date_str, fmt)
         return dt.timestamp()
+    
+    @staticmethod
+    def generate_ticket_code():
+        # Generate ticket code of first 5 letters + 12 random numbers, for example LYPJR714855620195
+        prefix = ''.join(random.choices(string.ascii_uppercase, k=5))
+        number = ''.join(random.choices(string.digits, k=12))
+        return f"{prefix}{number}"
