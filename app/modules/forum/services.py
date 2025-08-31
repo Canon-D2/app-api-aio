@@ -49,6 +49,8 @@ class PostServices:
         if not thread: return ErrorCode.ThreadNotFound()
         if not user: return ErrorCode.UserNotFound()
 
+        await thread_crud.update_by_id(thread["_id"], {"$inc": {"comments": 1}})
+
         result = await self.crud.create(data)
         return result
 
@@ -61,6 +63,14 @@ class PostServices:
         return result
 
     async def delete(self, _id: str):
+
+        post = await self.crud.get_by_id(_id)
+        if not post: raise ErrorCode.PostNotFound()
+
+        thread = await thread_crud.get_by_id(post.get("thread_id"))
+        if thread: 
+            await thread_crud.update_by_id(thread["_id"], {"$inc": {"comments": -1}})
+
         result = await self.crud.delete_by_id(_id)
         return result
 

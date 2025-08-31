@@ -13,7 +13,7 @@ class EmailService:
     async def send_otp_email(self, email: str, fullname: str, otp: str):
         try:
             # Load & render template
-            template = self.env.get_template("temp_otp.html")
+            template = self.env.get_template("email_otp.html")
             html_content = template.render(fullname=fullname, otp=otp)
 
             # Create message
