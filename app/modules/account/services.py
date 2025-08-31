@@ -54,11 +54,10 @@ class AccountService:
             }
         )
         # Call send OTP mail worker
-        await self.email_controller.send_email({
+        await self.email_controller.send_email_producer({
             "email": user["email"],
             "fullname": user.get("name", ""),
-            "otp": str(otp)
-        })
+            "otp": str(otp)})
 
         return {"message": "OTP generated and valid for 5 minutes"}
     

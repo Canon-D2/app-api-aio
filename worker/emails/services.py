@@ -3,6 +3,7 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from jinja2 import Environment, FileSystemLoader
 from .config import *
+from .exception import ErrorCode
 
 class EmailService:
     def __init__(self):
@@ -34,4 +35,6 @@ class EmailService:
             print(f"[EmailService] Email sent successfully to {email}")
 
         except Exception as e:
-            print(f"[EmailService] Error sending email to {email}: {e}")
+            # print(f"[EmailService] Error sending email to {email}: {e}")
+            raise ErrorCode.SendMailFailed()
+

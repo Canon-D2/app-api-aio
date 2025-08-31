@@ -12,5 +12,5 @@ sentry_sdk.init(
 
 if __name__ == "__main__":
     rabbit = RabbitMQHandler()
-    asyncio.run(rabbit.consume())
+    asyncio.run(rabbit.consumer())
     print("\n[*] Worker is launching")

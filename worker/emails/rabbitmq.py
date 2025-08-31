@@ -1,6 +1,7 @@
-import json, aio_pika, traceback
+import json, aio_pika
 from .config import RABBITMQ_URL
-from .models import EmailData
+from .schemas import EmailData
+from .exception import ErrorCode
 from .services import EmailService
 
 class RabbitMQHandler:
@@ -20,10 +21,9 @@ class RabbitMQHandler:
                 # print(f"[RabbitMQ] Queue declared: {self.queue_name}")
         except Exception as e:
             # print(f"[RabbitMQ] Error while connecting: {e}")
-            traceback.print_exc()
-            raise
+            raise ErrorCode.RabbitConnect()
 
-    async def publish(self, data: EmailData):
+    async def producer(self, data: EmailData):
         try:
             # print(f"[RabbitMQ] Prepare to publish message: {data.dict()}")
             await self.connect()
@@ -35,10 +35,9 @@ class RabbitMQHandler:
             # print(f"[RabbitMQ] Published message for {data.email}")
         except Exception as e:
             # print(f"[RabbitMQ] Error publishing message: {e}")
-            traceback.print_exc()
-            raise
+            raise ErrorCode.RabbitProducer()
 
-    async def consume(self):
+    async def consumer(self):
         await self.connect()
         queue = await self.channel.declare_queue(self.queue_name, durable=True)
 
@@ -57,4 +56,4 @@ class RabbitMQHandler:
                         )
                     except Exception as e:
                         # print(f"[RabbitMQ] Error processing message: {e}")
-                        traceback.print_exc()
+                        raise ErrorCode.RabbitConsumer()

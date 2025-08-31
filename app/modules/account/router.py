@@ -10,7 +10,7 @@ controller = AccountController()
 
 @router.get("/get-me", status_code=200, 
             responses={200: {"description": "Get items success"}})
-async def get_customer(current_user: dict = require_permission()):
+async def get_me(current_user: dict = require_permission()):
     result = {"user": current_user}
     return result
 
@@ -22,7 +22,7 @@ async def login(data: schemas.LoginRequest):
     return result
 
 
-@router.post("/otp", status_code=201, responses={
+@router.post("/get-otp", status_code=201, responses={
                 201: {"model": schemas.GetOTPResponse, "description": "Post items success"}})
 async def get_otp(data: schemas.GetOTPRequest):
     result = await controller.get_otp(data)
