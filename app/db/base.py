@@ -26,6 +26,14 @@ class BaseCRUD:
         result = await self.collection.find_one({"_id": ObjectId(_id)})
         result = Helper.convert_object_id(result)
         return result
+    
+    async def update_one(self, query: dict, data: dict):
+        data["updated_at"] = Helper.get_timestamp()
+        await self.collection.update_one(query, data)
+        
+        result = await self.collection.find_one(query)
+        result = Helper.convert_object_id(result) if result else None
+        return result
 
     async def delete_by_id(self, _id: str):
         result = await self.collection.delete_one({"_id": ObjectId(_id)})
