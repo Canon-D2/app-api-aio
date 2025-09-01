@@ -1,6 +1,6 @@
 from typing import Any, Dict
-from app.db.base import BaseCRUD
-from app.db.engine import engine_aio
+from app.mongo.base import BaseCRUD
+from app.mongo.engine import engine_aio
 from .exception import ErrorCode
 from app.modules.user.services import user_crud
 

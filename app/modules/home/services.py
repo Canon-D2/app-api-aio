@@ -1,4 +1,4 @@
-from app.db.engine import engine_aio
+from app.mongo.engine import engine_aio
 
 
 class HomeService:

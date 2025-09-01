@@ -1,7 +1,7 @@
 from jose import jwt
-from app.db.base import BaseCRUD
+from app.mongo.base import BaseCRUD
 from app.utils.helper import Helper
-from app.db.engine import engine_aio
+from app.mongo.engine import engine_aio
 from bcrypt import checkpw, gensalt, hashpw
 
 from .config import ACCESS_TOKEN_EXPIRE_DAY, ALGORITHM, REMEMBER_TOKEN_DAY, SECRET_KEY

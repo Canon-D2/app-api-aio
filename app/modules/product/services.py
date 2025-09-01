@@ -1,7 +1,7 @@
 from bson import ObjectId
-from app.db.base import BaseCRUD
+from app.mongo.base import BaseCRUD
 from .exception import ErrorCode
-from app.db.engine import engine_aio
+from app.mongo.engine import engine_aio
 
 
 product_crud = BaseCRUD("products", engine_aio)

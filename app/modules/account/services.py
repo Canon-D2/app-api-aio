@@ -1,7 +1,7 @@
 import random
 from bson import ObjectId
-from app.db.base import BaseCRUD
-from app.db.engine import engine_aio
+from app.mongo.base import BaseCRUD
+from app.mongo.engine import engine_aio
 from app.auth.services import auth_services
 from .schemas import LoginRequest, ForgotPasswordRequest
 from .exception import ErrorCode

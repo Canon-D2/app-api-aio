@@ -1,6 +1,8 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+cd "$(dirname "$0")"
 
 docker run --rm \
-  -v "/home/username/app-api-aio/backup:/backup" \
+  -v "${PWD}/backup:/backup" \
   mongo \
   mongorestore --host host.docker.internal --port 27018 --db aio /backup
