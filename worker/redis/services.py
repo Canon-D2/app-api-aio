@@ -52,8 +52,11 @@ class CartService:
         user = await user_crud.get_by_id(user_id)
         product =  await product_crud.get_by_id(data.item.product_id)
 
-        if not (user and product):
-            raise ErrorCode.DataNotDuplicate()
+        if not (user and product): raise ErrorCode.DataNotDuplicate()
+        
+        # Check inventory product quantity
+        if data.item.quantity > product.get("quantity"): 
+            raise ErrorCode.InsufficientStock(product.get("name"), product.get("quantity"))
 
         cart = await self._load_cart(user_id, required=False) or CartResponse(user_id=user_id)
 

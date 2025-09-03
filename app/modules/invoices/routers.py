@@ -12,7 +12,7 @@ controller = InvoiceController()
     201: {"model": schemas.InvoiceResponse, "description": "Create items success"},
 })
 async def checkout_invoice(user_id: str = Path(...)):
-    result = await controller.checkout(user_id)
+    result = await controller.checkout_cart(user_id)
     if not result:
         raise ErrorCode.InvoiceNotFound()
     return result

@@ -32,7 +32,16 @@ class ErrorCode:
             type="invoices/error/not-found",
             status=status.HTTP_404_NOT_FOUND,
             title="Invoice not found",
-            detail="Invoice not found"
+            detail="The Invoice provided does not exist in the system"
+        )
+    
+    @staticmethod
+    def ProductNotFound():
+        return StandardException(
+            type="product/error/not-found",
+            status=status.HTTP_404_NOT_FOUND,
+            title="Product not found",
+            detail="The product ID provided does not exist in the system."
         )
 
     @staticmethod
@@ -42,4 +51,13 @@ class ErrorCode:
             status=status.HTTP_400_BAD_REQUEST,
             title="Invalid invoice id",
             detail="The invoice id provided is not valid"
+        )
+
+    @staticmethod
+    def InsufficientStock(product_name: str, inventory: int):
+        return StandardException(
+            type="cart/error/insufficient-stock",
+            status=status.HTTP_409_CONFLICT,
+            title="Insufficient stock",
+            detail=f"Product '{product_name}' quantity {inventory} not enough."
         )

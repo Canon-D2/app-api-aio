@@ -6,8 +6,8 @@ class InvoiceController:
         self.crud = invoice_crud
         self.service = InvoiceServices(self.crud)
 
-    async def checkout(self, user_id: str):
-        result = await self.service.create_from_cart(user_id)
+    async def checkout_cart(self, user_id: str):
+        result = await self.service.checkout_cart(user_id)
         return result
 
     async def get(self, _id: str):

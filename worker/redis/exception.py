@@ -34,3 +34,12 @@ class ErrorCode:
             title="User & Product not found",
             detail="The user ID or Product ID provided does not exist in the system."
         )
+    
+    @staticmethod
+    def InsufficientStock(product_name: str, inventory: int):
+        return StandardException(
+            type="cart/error/insufficient-stock",
+            status=status.HTTP_409_CONFLICT,
+            title="Insufficient stock",
+            detail=f"Product '{product_name}' quantity {inventory} not enough."
+        )
