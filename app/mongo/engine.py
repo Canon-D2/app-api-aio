@@ -4,7 +4,7 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 class Engine(object):
     def __init__(self, database_name: str) -> None:
-        database_url = f'mongodb://db/{database_name}?retryWrites=true&w=majority'
+        database_url = f'mongodb://mgdb/{database_name}?retryWrites=true&w=majority'
         # database_url = f"mongodb://localhost/{database_name}"
         database_driver = AsyncIOMotorClient(database_url)
         self.driver = database_driver[database_name]

@@ -6,21 +6,23 @@ services:
     image: app-api-aio/api
     restart: on-failure
     command: uvicorn main:app --reload --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers # Development
-    # command: uvicorn main:app --reload --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers # Production
+    # command: uvicorn main:app --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers # Production
     volumes:
       - ./:/opt/python-projects/app/
-      - ./video/:/opt/python-projects/app/video/
+      - ./video/:/opt/python-projects/app/assets/video/
     ports:
       - "127.0.0.1:8000:8000"
     env_file:
       - ./env/app.env
     healthcheck:
-      test: ["CMD", "sh", "-c", "curl -s -f http://localhost:8000/v1/home/ping || exit 1"]
+      test: ["CMD", "sh", "-c", "curl -s -f http://127.0.0.1:8000/v1/home/ping || exit 1"]
       interval: 60s
       timeout: 3s
       retries: 3
     depends_on:
-      db:
+      mgdb:
+        condition: service_healthy
+      pgdb:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
@@ -44,7 +46,9 @@ services:
         condition: service_healthy
       redis:
         condition: service_healthy
-      db:
+      mgdb:
+        condition: service_healthy
+      pgdb:
         condition: service_healthy
 
   nginx:
@@ -86,16 +90,31 @@ services:
       timeout: 10s
       retries: 3
 
-  db:
+  mgdb:
     image: mongo
     restart: on-failure
     volumes:
-      - ./database:/data/db
+      - ./mongo:/data/db
     command: --quiet
     ports:
       - "127.0.0.1:27018:27017"
     healthcheck:
       test: echo 'db.runCommand({serverStatus:1}).ok' | mongosh admin --quiet | grep 1
+      interval: 60s
+      timeout: 60s
+      retries: 6
+
+  pgdb:
+    image: postgres:15-alpine
+    restart: on-failure
+    env_file:
+      - ./env/app.env
+    volumes:
+      - ./postgres:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-postgres} -d $${POSTGRES_DB:-$${POSTGRES_USER:-postgres}}"]
       interval: 60s
       timeout: 60s
       retries: 6

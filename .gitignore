@@ -1,8 +1,7 @@
-database/
 __pycache__
+database/
+postgres/
+mongo/
 caching/
-CNAME
 backup/
-video/
-assets/video/
-kafka_data
+CNAME
