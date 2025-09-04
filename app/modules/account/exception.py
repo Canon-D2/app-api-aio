@@ -20,7 +20,7 @@ class ErrorCode:
     def EmailNotFound():
         return StandardException(
             type="auth/error/email-not-found",
-            status=status.HTTP_404_BAD_REQUEST,
+            status=status.HTTP_404_NOT_FOUND,
             title="Email not Found",
             detail="Email does not exist"
         )
