@@ -24,13 +24,7 @@ class EmailService:
             message.attach(MIMEText(html_content, "html", "utf-8"))
 
             # Send mail
-            await aiosmtplib.send(
-                message,
-                hostname=HOST_SMTP,
-                port=PORT_SMTP,
-                username=USERNAME_SMTP,
-                password=PASSWORD_SMTP
-            )
+            await aiosmtplib.send(message,hostname=HOST_SMTP,port=PORT_SMTP,username=USERNAME_SMTP,password=PASSWORD_SMTP)
 
             print(f"[EmailService] Email sent successfully to {email}")
 
@@ -38,3 +32,24 @@ class EmailService:
             # print(f"[EmailService] Error sending email to {email}: {e}")
             raise ErrorCode.SendMailFailed()
 
+    async def send_invoice_email(self, email: str, fullname: str, data: str):
+        try:
+            # Load & render template
+            template = self.env.get_template("email_invoice.html")
+            html_content = template.render(fullname=fullname, data=data)
+
+            # Create message
+            message = MIMEMultipart("alternative")
+            message["From"] = USERNAME_SMTP
+            message["To"] = email
+            message["Subject"] = "[App-Api-Aio] Infomation Invoice"
+            message.attach(MIMEText(html_content, "html", "utf-8"))
+
+            # Send mail
+            await aiosmtplib.send(message,hostname=HOST_SMTP,port=PORT_SMTP,username=USERNAME_SMTP,password=PASSWORD_SMTP)
+
+            print(f"[EmailService] Email sent successfully to {email}")
+
+        except Exception as e:
+            # print(f"[EmailService] Error sending email to {email}: {e}")
+            raise ErrorCode.SendMailFailed()

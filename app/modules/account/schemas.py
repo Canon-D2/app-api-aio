@@ -25,3 +25,8 @@ class ForgotPasswordRequest(BaseModel):
 
 class ForgotPasswordResponse(BaseModel):
     message: str
+
+class OTPDataEmail(BaseModel):
+    email: EmailStr
+    fullname: str
+    otp: str

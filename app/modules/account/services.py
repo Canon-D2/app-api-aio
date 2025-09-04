@@ -3,7 +3,7 @@ from bson import ObjectId
 from app.mongo.base import BaseCRUD
 from app.mongo.engine import engine_aio
 from app.auth.services import auth_services
-from .schemas import LoginRequest, ForgotPasswordRequest
+from .schemas import LoginRequest, ForgotPasswordRequest, OTPDataEmail
 from .exception import ErrorCode
 from app.utils.helper import Helper
 from worker.emails.controllers import EmailController
@@ -54,12 +54,11 @@ class AccountService:
             }
         )
         # Call send OTP mail worker
-        await self.email_controller.send_email_producer({
-            "email": user["email"],
-            "fullname": user.get("name", ""),
-            "otp": str(otp)})
+        otp_data = OTPDataEmail(email=user["email"], fullname=user.get("name",""), otp=str(otp))
 
-        return {"message": "OTP generated and valid for 5 minutes"}
+        await self.email_controller.send_email_producer(data = otp_data.dict(), mail_type = "otp")
+
+        return {"message": f"OTP sent to {email} and valid for 5 minutes"}
     
     async def forgot_password(self, data: ForgotPasswordRequest):
         user = await self.crud.get_one({"email": data.email})
