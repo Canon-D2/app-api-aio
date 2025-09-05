@@ -37,3 +37,18 @@ class PaginatedInvoiceResponse(BaseModel):
     limit: int
     total_pages: int
     results: List[InvoiceResponse]
+
+
+class ItemEmail(BaseModel):
+    name: str
+    price: float
+    quantity: int
+    image: Optional[str] = None
+
+
+class InvoiceEmail(BaseModel):
+    items: List[ItemEmail]
+    address: Optional[str]
+    note: Optional[str]
+    total_items: int
+    total_price: float

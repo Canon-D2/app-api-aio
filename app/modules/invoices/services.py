@@ -1,9 +1,12 @@
 from app.mongo.base import BaseCRUD
 from app.mongo.engine import engine_aio
 from app.utils.helper import Helper
-from . exception import ErrorCode
+from .exception import ErrorCode
+from .schemas import InvoiceEmail, ItemEmail
 from worker.redis.services import CartService
+from worker.emails.controllers import EmailController
 from worker.telegram.services import invoice_bot
+from app.modules.user.services import user_crud
 from app.modules.product.services import product_crud
 
 invoice_crud = BaseCRUD("invoices", engine_aio)
@@ -12,6 +15,7 @@ class InvoiceServices:
     def __init__(self, crud: BaseCRUD):
         self.crud = crud
         self.cart_service = CartService()
+        self.email_controller = EmailController()
 
     async def checkout_cart(self, user_id: str):
         cart = await self.cart_service.get_cart(user_id)
@@ -46,8 +50,19 @@ class InvoiceServices:
 
         result = await self.crud.create(invoice)
 
+        # Send mail to RabbitMQ
+        user = await user_crud.get_by_id(cart["user_id"])
+        email_data = InvoiceEmail(
+            items=[ItemEmail(**item) for item in cart["items"]],
+            address=cart.get("address"),
+            note=cart.get("note"),
+            total_items=cart.get("total_items"),
+            total_price=cart.get("total_price")
+        )
+        await self.email_controller.send_email_producer(email=user.get("email"), fullname=user.get("fullname"), data=email_data.dict(), mail_type="bill_inf")
+
         await self.cart_service.redis.delete(Helper._key(user_id))
-        await invoice_bot.send_telegram(invoice)
+        await invoice_bot.send_telegram(invoice)    
 
         return result
 
