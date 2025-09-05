@@ -22,15 +22,14 @@ class AuthServices():
             return False
         return True
 
-    async def create_access_token(self, data):
-        to_encode = data.copy()
-        expire_days = (
-            REMEMBER_TOKEN_DAY if data.get("remember_me") else ACCESS_TOKEN_EXPIRE_DAY
-        )
+    async def encode_access_token(self, data):
+        data = data.copy()
+        expire_days = (REMEMBER_TOKEN_DAY if data.get("remember_me") else ACCESS_TOKEN_EXPIRE_DAY)
         expire = Helper.get_future_timestamp(days_to_add=expire_days)
-        to_encode.update({"expire": expire})
-        encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
-        return encoded_jwt
+
+        data.update({"expire": expire})
+        encode = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
+        return encode
 
 
 auth_crud = BaseCRUD("auth", engine_aio)

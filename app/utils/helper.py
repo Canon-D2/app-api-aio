@@ -1,7 +1,8 @@
-import unicodedata, re
 from bson import ObjectId
+from jose import jwt
+import unicodedata, re
 import time, datetime, random, string
-
+from app.auth.config import SECRET_KEY, ALGORITHM
 
 class Helper:
     
@@ -20,7 +21,7 @@ class Helper:
     
     @staticmethod
     def get_timestamp() -> float:
-        timestamp = int(time.time())
+        timestamp = time.time()
         return timestamp
 
     @staticmethod
@@ -43,7 +44,6 @@ class Helper:
             return False
         query = {"email": email}
         if exclude_id:
-            from bson import ObjectId
             query["_id"] = {"$ne": ObjectId(exclude_id)}
         existing = await crud.collection.find_one(query)
         return existing is not None
@@ -73,7 +73,8 @@ class Helper:
     @staticmethod
     def timestamp_to_date(ts: float, fmt: str = "%d-%m-%Y %H:%M:%S") -> str:
         # Convert timestamp (e.g., 1755688756) to date string "20-08-2025 22:59:16"
-        return datetime.datetime.fromtimestamp(float(ts)).strftime(fmt)
+        result = datetime.datetime.fromtimestamp(float(ts)).strftime(fmt)
+        return result
 
     @staticmethod
     def date_to_timestamp(date_str: str, fmt: str = "%d-%m-%Y %H:%M:%S") -> float:
@@ -87,3 +88,8 @@ class Helper:
         prefix = ''.join(random.choices(string.ascii_uppercase, k=5))
         number = ''.join(random.choices(string.digits, k=12))
         return f"{prefix}{number}"
+    
+    @staticmethod
+    async def decode_access_token(data: str):
+        decode = jwt.decode(token=data, key=SECRET_KEY, algorithms=[ALGORITHM])
+        return decode

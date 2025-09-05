@@ -33,6 +33,23 @@ class BaseCRUD:
         result = await self.collection.delete_one({"_id": ObjectId(_id)})
         result = {"status": "success"} if result.deleted_count > 0 else {"status": "failed"}
         return result
+    
+    async def get_one(self, query: dict):
+        result = await self.collection.find_one(query)
+        return result
+    
+    async def update_one(self, query: dict, data: dict):
+        data["updated_at"] = Helper.get_timestamp()
+        await self.collection.update_one(query, {"$set": data})
+        
+        result = await self.collection.find_one(query)
+        result = Helper.convert_object_id(result) if result else None
+        return result
+    
+    async def find_one(self, query: dict):
+        result = await self.collection.find_one(query)
+        result =  Helper.convert_object_id(result) if result else None
+        return result
 
     async def search(
         self,
@@ -58,23 +75,6 @@ class BaseCRUD:
             "total_pages": math.ceil(total / limit),
             "results": results,
         }
-        return result
-    
-    async def get_one(self, query: dict):
-        result = await self.collection.find_one(query)
-        return result
-    
-    async def update_one(self, query: dict, data: dict):
-        data["updated_at"] = Helper.get_timestamp()
-        await self.collection.update_one(query, data)
-        
-        result = await self.collection.find_one(query)
-        result = Helper.convert_object_id(result) if result else None
-        return result
-    
-    async def find_one(self, query: dict):
-        result = await self.collection.find_one(query)
-        result =  Helper.convert_object_id(result) if result else None
         return result
     
     def _get_sort(self, sort_field: str, is_desc: bool):

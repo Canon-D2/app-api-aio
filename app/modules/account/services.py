@@ -32,7 +32,7 @@ class AccountService:
             "permission": user.get("permission"),
             "remember_me": data.remember_me
         }
-        token = await auth_services.create_access_token(token_data)
+        token = await auth_services.encode_access_token(token_data)
 
         return {"token_type": "bearer", "access_token": token}
 
@@ -42,18 +42,16 @@ class AccountService:
         if not user: raise ErrorCode.EmailNotFound()
 
         otp_code = random.randint(100000, 999999)
+        expire_otp = Helper.get_timestamp() + 5 * 60  # 5 min = 300s
 
-        expire_otp = Helper.get_timestamp() + 5 * 60  # 5 minures = 300 seconds
-
-        await self.crud.collection.update_one(
+        await self.crud.update_one(
             {"_id": ObjectId(user["_id"])},
             {
-                "$set": {
-                    "otp_code": otp_code,
-                    "expire_otp": expire_otp,
-                }
+                "otp_code": otp_code,
+                "expire_otp": expire_otp,
             }
         )
+
         # Call send OTP mail Rabbitmq
         await self.email_controller.send_email_producer(email=user["email"], fullname=user["fullname"], data={"otp_code": str(otp_code)}, mail_type="otp_val")
 
