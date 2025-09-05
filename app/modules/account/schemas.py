@@ -20,7 +20,7 @@ class GetOTPResponse(BaseModel):
 
 class ForgotPasswordRequest(BaseModel):
     email: EmailStr
-    otp: int
+    otp_code: int
     new_password: str
 
 class ForgotPasswordResponse(BaseModel):

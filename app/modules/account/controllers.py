@@ -7,10 +7,13 @@ class AccountController:
         self.service = AccountService(account_crud)
 
     async def login(self, data: LoginRequest):
-        return await self.service.login(data)
+        result = await self.service.login(data)
+        return result
     
     async def get_otp(self, data: GetOTPRequest):
-        return await self.service.get_otp(data.email)
+        result = await self.service.get_otp(data.email)
+        return result
 
     async def forgot_password(self, data: ForgotPasswordRequest):
-        return await self.service.forgot_password(data)
+        result = await self.service.forgot_password(data)
+        return result

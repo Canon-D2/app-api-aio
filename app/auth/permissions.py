@@ -3,7 +3,13 @@ PERMISSIONS = {
        "/v1/home/database/export", 
         "/v1/account/get-me",
     ],
-    "customer": [
+    "member": [
+        "/v1/account/get-me",
+    ],
+    "memvip": [
+        "/v1/account/get-me",
+    ],
+    "staff": [
         "/v1/account/get-me",
     ]
 }

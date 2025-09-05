@@ -22,12 +22,12 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
 def require_permission():
     async def dependency(request: Request, user: dict = Depends(get_current_user)):
         path = request.url.path
-        role = user.get("role")
+        permission = user.get("permission")
 
-        if not role:
+        if not permission:
             raise ErrorCode.PermissionDenied()
 
-        allowed_routes = PERMISSIONS.get(role, [])
+        allowed_routes = PERMISSIONS.get(permission, [])
         if path not in allowed_routes:
             raise ErrorCode.PermissionDenied()
         return user

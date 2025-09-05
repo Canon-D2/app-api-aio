@@ -27,21 +27,21 @@ class AccountService:
             raise ErrorCode.InvalidCredentials()
 
         token_data = {
-            "sub": str(user["_id"]),
-            "email": user["email"],
-            "remember_me": data.remember_me,
-            "role": user.get("role") 
+            "uid": str(user.get("_id")),
+            "email": user.get("email"),
+            "permission": user.get("permission"),
+            "remember_me": data.remember_me
         }
         token = await auth_services.create_access_token(token_data)
 
-        return {"access_token": token, "token_type": "bearer"}
+        return {"token_type": "bearer", "access_token": token}
 
     async def get_otp(self, email: str):
 
         user = await self.crud.get_one({"email": email})
         if not user: raise ErrorCode.EmailNotFound()
 
-        otp = random.randint(100000, 999999)
+        otp_code = random.randint(100000, 999999)
 
         expire_otp = Helper.get_timestamp() + 5 * 60  # 5 minures = 300 seconds
 
@@ -49,13 +49,13 @@ class AccountService:
             {"_id": ObjectId(user["_id"])},
             {
                 "$set": {
-                    "otp": otp,
+                    "otp_code": otp_code,
                     "expire_otp": expire_otp,
                 }
             }
         )
         # Call send OTP mail Rabbitmq
-        await self.email_controller.send_email_producer(email=user["email"], fullname=user["fullname"], data={"otp_code": str(otp)}, mail_type="otp_val")
+        await self.email_controller.send_email_producer(email=user["email"], fullname=user["fullname"], data={"otp_code": str(otp_code)}, mail_type="otp_val")
 
         return {"message": f"OTP sent to {email} and valid for 5 minutes"}
     
@@ -64,10 +64,10 @@ class AccountService:
         user = await self.crud.get_one({"email": data.email})
         if not user:
             raise ErrorCode.EmailNotFound()
-        if "otp" not in user or "expire_otp" not in user:
+        if "otp_code" not in user or "expire_otp" not in user:
             raise ErrorCode.InvalidOTP()
         
-        if str(user["otp"]) != str(data.otp):
+        if str(user["otp_code"]) != str(data.otp_code):
             raise ErrorCode.InvalidOTP()
         
         if Helper.get_timestamp() > user["expire_otp"]:
@@ -79,7 +79,7 @@ class AccountService:
             {"_id": ObjectId(user["_id"])},
             {
                 "$set": {"password": hashed_password},
-                "$unset": {"otp": "", "expire_otp": ""}
+                "$unset": {"otp_code": "", "expire_otp": ""}
             }
         )
         return {"message": "Password has been reset successfully"}

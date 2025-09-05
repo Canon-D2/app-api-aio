@@ -14,7 +14,8 @@ class AuthServices():
         self.owner_type = owner_type
 
     async def hash_password(self, password):
-        return hashpw(password.encode("utf8"), gensalt())
+        result = hashpw(password.encode("utf8"), gensalt())
+        return result
 
     def check_password(self, user_login_password, password):
         if not checkpw(user_login_password.encode("utf-8"), password):
