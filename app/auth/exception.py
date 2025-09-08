@@ -14,7 +14,7 @@ class ErrorCode:
             type="auth/error/invalid-token",
             status=status.HTTP_401_BAD_REQUEST,
             title="Invalid Token",
-            detail="Token không đúng."
+            detail="Login failed, please try again."
         )
 
     @staticmethod
@@ -23,7 +23,7 @@ class ErrorCode:
             type="auth/error/token-expired",
             status=status.HTTP_401_BAD_REQUEST,
             title="Token Expired",
-            detail="Token hết hạn."
+            detail="Login expired, please try again."
         )
 
     @staticmethod
@@ -32,5 +32,5 @@ class ErrorCode:
             type="auth/error/permission-denied",
             status=status.HTTP_403_FORBIDDEN,
             title="Permission denied",
-            detail="Không đủ quyền truy cập."
+            detail="Access denied, please contact administrator."
         )
