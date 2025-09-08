@@ -37,7 +37,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         auth_header = request.headers.get("Authorization")
         if auth_header and auth_header.startswith("Bearer "):
             token = auth_header.split(" ")[1]
-            payload = await Helper.decode_access_token(data=token)
+            payload = await Helper.decode_access_token(token=token)
             user_id = payload.get("uid")
 
         # Call the actual endpoint

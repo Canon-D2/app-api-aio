@@ -1,6 +1,6 @@
-from bson import ObjectId
 from jose import jwt
 import unicodedata, re
+from bson import ObjectId
 import time, datetime, random, string
 from app.auth.config import SECRET_KEY, ALGORITHM
 
@@ -8,7 +8,8 @@ class Helper:
     
     @staticmethod
     def _key(user_id: str) -> str:
-        return f"cart:{user_id}"
+        result = f"cart:{user_id}"
+        return result
     
     @staticmethod
     def _recalc(cart: dict) -> dict:
@@ -25,27 +26,30 @@ class Helper:
         return timestamp
 
     @staticmethod
-    def convert_object_id(doc: dict) -> dict:
+    def object_to_string(doc: dict) -> dict:
         if doc and "_id" in doc:
             doc["_id"] = str(doc["_id"])
         return doc
     
     @staticmethod
-    def is_object_id(id: str) -> bool:
-        try:
-            ObjectId(id)
-            return True
-        except Exception:
-            return False
+    def string_to_object(query: dict) -> dict:
+        if "_id" in query and isinstance(query["_id"], str) and Helper.is_object_id(query["_id"]):
+            query["_id"] = ObjectId(query["_id"])
+        return query
+    
+    @staticmethod
+    def is_object_id(val: str) -> bool:
+        result =  ObjectId.is_valid(val)
+        return result
 
     @staticmethod
     async def is_email_exists(crud, email: str, exclude_id: str = None) -> bool:
-        if not email:
+        if not email: 
             return False
         query = {"email": email}
         if exclude_id:
             query["_id"] = {"$ne": ObjectId(exclude_id)}
-        existing = await crud.collection.find_one(query)
+        existing = await crud.get_one(query)
         return existing is not None
     
     @staticmethod
@@ -79,8 +83,8 @@ class Helper:
     @staticmethod
     def date_to_timestamp(date_str: str, fmt: str = "%d-%m-%Y %H:%M:%S") -> float:
         # Convert date string "20-08-2025 22:59:16" to timestamp (e.g., 1755688756.0)
-        dt = datetime.datetime.strptime(date_str, fmt)
-        return dt.timestamp()
+        result = datetime.datetime.strptime(date_str, fmt)
+        return result.timestamp()
     
     @staticmethod
     def generate_ticket_code():
@@ -90,6 +94,6 @@ class Helper:
         return f"{prefix}{number}"
     
     @staticmethod
-    async def decode_access_token(data: str):
-        decode = jwt.decode(token=data, key=SECRET_KEY, algorithms=[ALGORITHM])
-        return decode
+    async def decode_access_token(token: str):
+        result = jwt.decode(token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
+        return result

@@ -12,12 +12,12 @@ class BaseCRUD:
         data["created_at"] = Helper.get_timestamp()
         user = await self.collection.insert_one(data)
         result = await self.collection.find_one({"_id": user.inserted_id})
-        result = Helper.convert_object_id(result)
+        result = Helper.object_to_string(result)
         return result
 
     async def get_by_id(self, _id: str):
         result = await self.collection.find_one({"_id": ObjectId(_id)})
-        result = Helper.convert_object_id(result) if result else None 
+        result = Helper.object_to_string(result) if result else None 
         return result
 
     async def update_by_id(self, _id: str, data: dict):
@@ -26,7 +26,7 @@ class BaseCRUD:
             {"_id": ObjectId(_id)}, {"$set": data}
         )
         result = await self.collection.find_one({"_id": ObjectId(_id)})
-        result = Helper.convert_object_id(result)
+        result = Helper.object_to_string(result)
         return result
 
     async def delete_by_id(self, _id: str):
@@ -43,12 +43,12 @@ class BaseCRUD:
         await self.collection.update_one(query, {"$set": data})
         
         result = await self.collection.find_one(query)
-        result = Helper.convert_object_id(result) if result else None
+        result = Helper.object_to_string(result) if result else None
         return result
     
     async def find_one(self, query: dict):
         result = await self.collection.find_one(query)
-        result =  Helper.convert_object_id(result) if result else None
+        result =  Helper.object_to_string(result) if result else None
         return result
 
     async def search(
@@ -66,7 +66,7 @@ class BaseCRUD:
             .skip(skip)
             .limit(limit)
         )
-        results = [Helper.convert_object_id(doc) async for doc in cursor]
+        results = [Helper.object_to_string(doc) async for doc in cursor]
         total = await self.collection.count_documents(query)
         result =  {
             "total": total,
