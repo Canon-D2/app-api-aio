@@ -5,6 +5,7 @@ from .exception import ErrorCode
 
 event_crud = BaseCRUD("fes-events", engine_aio)
 ticket_crud = BaseCRUD("fes-tickets", engine_aio)
+user_crud = BaseCRUD("users", engine_aio)
 
 
 class EventServices:
@@ -17,14 +18,20 @@ class EventServices:
 
     async def get(self, _id: str):  
         result = await self.crud.get_by_id(_id)
+        if not result:
+            raise ErrorCode.EventNotFound()
         return result
 
     async def update(self, _id: str, data: dict):
         result = await self.crud.update_by_id(_id, data)
+        if not result:
+            raise ErrorCode.EventNotFound()
         return result
 
     async def delete(self, _id: str):
         result = await self.crud.delete_by_id(_id)
+        if not result:
+            raise ErrorCode.EventNotFound()
         return result
 
     async def search(self, query: dict, page: int, limit: int):
@@ -38,7 +45,8 @@ class TicketServices:
 
     async def checkout(self, data: dict):
         event = await event_crud.get_by_id(data["event_id"])
-        if not event:
+        user = await user_crud.get_by_id(data["user_id"])
+        if not (event and user):
             raise ErrorCode.EventNotFound()
 
         result = []
@@ -69,10 +77,13 @@ class TicketServices:
 
 
     async def checkin(self, data):
-        ticket = await self.crud.find_one({"qr_token": data.qr_token})
+        ticket = await self.crud.get_one_query({"qr_token": data.qr_token})
+        user = await user_crud.get_by_id(data.check_by)
         if not ticket:
             raise ErrorCode.QrTokenNotFound()
-        
+        if not user:
+            raise ErrorCode.StaffNotFound()
+    
         if ticket.get("status") != "paid" or ticket.get("check_by"):
             raise ErrorCode.InvalidTicket()
 

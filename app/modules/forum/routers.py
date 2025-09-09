@@ -21,8 +21,6 @@ async def create_thread(data: schemas.ThreadCreate):
                 200: {"model": schemas.ThreadResponse, "description": "Get items success"}})
 async def get_thread(thread_id: str = Path(...)):
     result = await thread_controller.get(thread_id)
-    if not result:
-        raise ErrorCode.ThreadNotFound()
     return result
 
 
@@ -66,8 +64,6 @@ async def create_post(data: schemas.PostCreate):
                 200: {"model": schemas.PostResponse, "description": "Get items success"}})
 async def get_post(post_id: str = Path(...)):
     result = await post_controller.get(post_id)
-    if not result:
-        raise ErrorCode.PostNotFound()
     return result
 
 @router.put("/posts/edit/{post_id}", status_code=200, responses={

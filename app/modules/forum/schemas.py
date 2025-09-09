@@ -47,7 +47,7 @@ class PostCreate(BaseModel):
     content: str
     attachments: Optional[List[str]] = []
     reply_to: Optional[str] = None 
-    reactions: Optional[Dict[Literal["like", "love", "haha", "sad"], List[str]]] = None
+    reactions: Optional[Dict[Literal["like", "love", "haha", "sad"], List[str]]] = {}
 
 
 class PostUpdate(BaseModel):

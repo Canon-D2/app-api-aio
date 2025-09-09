@@ -14,10 +14,9 @@ class ProductDescription(BaseModel):
 
 
 class ProductCreate(BaseModel):
-    sku: str
-    serial: List[SerialItem] 
     name: str
     category: str
+    serial: List[SerialItem] 
     brand: str
     status: Literal["in-stock", "out-of-stock", "coming-soon", "pre-order"]
     quantity: int
@@ -30,10 +29,9 @@ class ProductCreate(BaseModel):
 
 
 class ProductUpdate(BaseModel):
-    sku: Optional[str] = None
-    serial: Optional[List[SerialItem]] = None
     name: Optional[str] = None
     category: Optional[str] = None
+    serial: Optional[List[SerialItem]] = None
     brand: Optional[str] = None
     status: Optional[Literal["in-stock", "out-of-stock", "coming-soon", "pre-order"]] = None
     quantity: Optional[int] = None
@@ -48,9 +46,9 @@ class ProductUpdate(BaseModel):
 class ProductResponse(BaseModel):
     id: str = Field(alias="_id")
     sku: str
-    serial: List[SerialItem]
     name: str
     category: str
+    serial: List[SerialItem]
     brand: str
     status: Optional[str]
     quantity: int

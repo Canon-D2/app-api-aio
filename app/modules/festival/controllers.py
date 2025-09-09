@@ -2,7 +2,8 @@ from .services import event_crud, ticket_crud, EventServices, TicketServices
 
 class EventController:
     def __init__(self):
-        self.service = EventServices(event_crud)
+        self.crud = event_crud
+        self.service = EventServices(self.crud)
 
     async def create(self, data):
         result = await self.service.create(data)
@@ -27,7 +28,8 @@ class EventController:
 
 class TicketController:
     def __init__(self):
-        self.service = TicketServices(ticket_crud)
+        self.crud = ticket_crud
+        self.service = TicketServices(self.crud)
 
     async def checkout(self, data):
         result = await self.service.checkout(data)

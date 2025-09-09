@@ -8,19 +8,6 @@ class StandardException(HTTPException):
 
 
 class ErrorCode:
-    from fastapi import status
-from fastapi.exceptions import HTTPException
-
-
-class StandardException(HTTPException):
-    def __init__(self, **kwargs):
-        super().__init__(
-            status_code=kwargs.get("status", 400),
-            detail=kwargs
-        )
-
-class ErrorCode:
-
     @staticmethod
     def EventNotFound():
         return StandardException(
@@ -46,4 +33,13 @@ class ErrorCode:
             status=status.HTTP_404_NOT_FOUND,
             title="QR token not found",
             detail="The QR token provided does not exist."
+        )
+    
+    @staticmethod
+    def StaffNotFound():
+        return StandardException(
+            type="users/error/invalid-id",
+            status=status.HTTP_404_NOT_FOUND,
+            title="Staff not found",
+            detail="The user ID provided does not exist in the system."
         )

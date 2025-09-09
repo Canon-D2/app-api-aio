@@ -9,7 +9,7 @@ class StandardException(HTTPException):
 
 class ErrorCode:
     @staticmethod
-    def InvalidCredentials():
+    def InvalidLogin():
         return StandardException(
             type="auth/error/invalid-credentials",
             status=status.HTTP_400_BAD_REQUEST,
@@ -25,12 +25,22 @@ class ErrorCode:
             detail="Email does not exist"
         )
     
+    @staticmethod
     def InvalidOTP():
         return StandardException(
             type="auth/error/invalid-otp",
             status=status.HTTP_400_BAD_REQUEST,
             title="Invalid OTP",
             detail="OTP is incorrect"
+        )
+    
+    @staticmethod
+    def OTPNotFound():
+        return StandardException(
+            type="auth/error/otp-not-found",
+            status=status.HTTP_404_NOT_FOUND,
+            title="OTP not Found",
+            detail="OTP does not exist"
         )
     
     def ExpiredOTP():

@@ -83,10 +83,9 @@ class CartService:
 
     async def edit(self, user_id: str, data: EditCart) -> Dict[str, Any]:
         user = await user_crud.get_by_id(user_id)
-        product =  await product_crud.get_by_id(data.item.product_id)
+        product =  await product_crud.get_by_id(data.product_id)
         
-        if not (user and product):
-            raise ErrorCode.DataNotDuplicate()
+        if not (user and product): raise ErrorCode.DataNotDuplicate()
         
         cart = await self._load_cart(user_id, required=True)
 
@@ -114,12 +113,12 @@ class CartService:
         return await self._save_cart(cart)
 
     async def delete(self, user_id: str, data: DeleteCart) -> Dict[str, Any]:
-        if data.product_id is None:
+        if data.product_id is None: # -> request = {}
             try:
                 removed = await self.redis.delete(Helper._key(user_id))
             except RedisError as e:
                 raise ErrorCode.GeneralError(str(e))
-            if removed == 0:
+            if removed == 0: # -> Not empty
                 raise ErrorCode.ItemNotFound()
             return CartResponse(user_id=user_id, items=[], last_update=Helper.get_timestamp()).dict()
 

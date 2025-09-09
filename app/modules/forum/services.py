@@ -22,14 +22,20 @@ class ThreadServices:
 
     async def get(self, _id: str):  
         result = await self.crud.get_by_id(_id)
+        if not result:
+            raise ErrorCode.ThreadNotFound()
         return result
 
     async def update(self, _id: str, data: dict):
         result = await self.crud.update_by_id(_id, data)
+        if not result:
+            raise ErrorCode.ThreadNotFound()
         return result
 
     async def delete(self, _id: str):
         result = await self.crud.delete_by_id(_id)
+        if not result:
+            raise ErrorCode.ThreadNotFound()
         return result
 
     async def search(self, query: dict, page: int, limit: int):
@@ -49,27 +55,31 @@ class PostServices:
         if not thread: return ErrorCode.ThreadNotFound()
         if not user: return ErrorCode.UserNotFound()
 
-        await thread_crud.update_by_id(thread["_id"], {"$inc": {"comments": 1}})
+        await thread_crud.update_no_limit({"_id": thread["_id"]}, {"$inc": {"comments": 1}})
 
         result = await self.crud.create(data)
         return result
 
     async def get(self, _id: str):
         result = await self.crud.get_by_id(_id)
+        if not result:
+            raise ErrorCode.PostNotFound()
         return result
 
     async def update(self, _id: str, data: dict):
         result = await self.crud.update_by_id(_id, data)
+        if not result:
+            raise ErrorCode.PostNotFound()
         return result
 
     async def delete(self, _id: str):
-
         post = await self.crud.get_by_id(_id)
-        if not post: raise ErrorCode.PostNotFound()
+        if not post: 
+            raise ErrorCode.PostNotFound()
 
         thread = await thread_crud.get_by_id(post.get("thread_id"))
         if thread: 
-            await thread_crud.update_by_id(thread["_id"], {"$inc": {"comments": -1}})
+            await thread_crud.update_no_limit({"_id": thread["_id"]}, {"$inc": {"comments": -1}})
 
         result = await self.crud.delete_by_id(_id)
         return result
@@ -103,5 +113,5 @@ class PostServices:
 
             reactions.setdefault(reaction, []).append(user_id)
 
-        await self.crud.update_by_id(str(post["_id"]), {"reactions": reactions})
+        await self.crud.update_by_id(post["_id"], {"reactions": reactions})
         return {"post_id": post_id, "reactions": reactions}

@@ -2,8 +2,6 @@ from fastapi import APIRouter, Query, Path
 from . import schemas
 from .controllers import UserController
 from typing import Optional
-from .exception import ErrorCode
-
 
 router = APIRouter(prefix="/v1/user", tags=["user"])
 controller = UserController()
@@ -20,8 +18,6 @@ async def create_user(data: schemas.UserCreate):
                 200: {"model": schemas.UserResponse, "description": "Get items success"}})
 async def get_user(user_id: str = Path(...)):
     result = await controller.get(user_id)
-    if not result:
-        raise ErrorCode.InvalidUserId()
     return result
 
 

@@ -52,7 +52,7 @@ class RabbitMQHandler:
                         if payload.get("mail_type") == "otp_val":
                             await self.service.send_otp_email(email=payload.get("email"), fullname=payload.get("fullname"), data=data["otp_code"])
 
-                        if payload.get("mail_type") == "bill_inf":
+                        elif payload.get("mail_type") == "bill_inf":
                             await self.service.send_invoice_email(email=payload.get("email"), fullname=payload.get("fullname"), data=data)
                         
                         else: raise ErrorCode.InvalidEmailData()

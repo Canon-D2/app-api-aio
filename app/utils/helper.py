@@ -1,7 +1,9 @@
 from jose import jwt
 import unicodedata, re
 from bson import ObjectId
-import time, datetime, random, string
+from typing import Optional
+from zoneinfo import ZoneInfo
+import time, datetime, random, string, secrets
 from app.auth.config import SECRET_KEY, ALGORITHM
 
 class Helper:
@@ -38,8 +40,8 @@ class Helper:
         return query
     
     @staticmethod
-    def is_object_id(val: str) -> bool:
-        result =  ObjectId.is_valid(val)
+    def is_object_id(_id: str) -> bool:
+        result =  ObjectId.is_valid(_id)
         return result
 
     @staticmethod
@@ -49,7 +51,7 @@ class Helper:
         query = {"email": email}
         if exclude_id:
             query["_id"] = {"$ne": ObjectId(exclude_id)}
-        existing = await crud.get_one(query)
+        existing = await crud.get_one_query(query=query)
         return existing is not None
     
     @staticmethod
@@ -75,25 +77,35 @@ class Helper:
         return text
 
     @staticmethod
-    def timestamp_to_date(ts: float, fmt: str = "%d-%m-%Y %H:%M:%S") -> str:
+    def timestamp_to_date(ts: float, fmt: str = "%d-%m-%Y %H:%M:%S", tz: Optional[str] = "Asia/Ho_Chi_Minh") -> str:
         # Convert timestamp (e.g., 1755688756) to date string "20-08-2025 22:59:16"
-        result = datetime.datetime.fromtimestamp(float(ts)).strftime(fmt)
-        return result
+        # Timezone ex: Asia/Tokyo, None, UTC,...
+        result = datetime.datetime.fromtimestamp(float(ts), tz=ZoneInfo(tz))
+        return result.strftime(fmt)
 
     @staticmethod
-    def date_to_timestamp(date_str: str, fmt: str = "%d-%m-%Y %H:%M:%S") -> float:
+    def date_to_timestamp(date_str: str, fmt: str = "%d-%m-%Y %H:%M:%S", tz: Optional[str] = "Asia/Ho_Chi_Minh") -> float:
         # Convert date string "20-08-2025 22:59:16" to timestamp (e.g., 1755688756.0)
         result = datetime.datetime.strptime(date_str, fmt)
+        result = result.replace(tzinfo=ZoneInfo(tz))
         return result.timestamp()
     
     @staticmethod
-    def generate_ticket_code():
+    def generate_ticket_code() -> str:
         # Generate ticket code of first 5 letters + 12 random numbers, for example LYPJR714855620195
         prefix = ''.join(random.choices(string.ascii_uppercase, k=5))
         number = ''.join(random.choices(string.digits, k=12))
         return f"{prefix}{number}"
     
     @staticmethod
-    async def decode_access_token(token: str):
+    async def decode_access_token(token: str) -> dict:
         result = jwt.decode(token=token, key=SECRET_KEY, algorithms=[ALGORITHM])
         return result
+    
+    @staticmethod
+    def generate_secret_otp(length: int = 6) -> str:
+        chars = string.ascii_uppercase + string.digits
+        while True:
+            otp = ''.join(secrets.choice(chars) for _ in range(length))
+            if sum(c.isalpha() for c in otp) >= 2 and sum(c.isdigit() for c in otp) >= 2:
+                return otp

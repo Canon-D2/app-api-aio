@@ -1,7 +1,6 @@
 from fastapi import APIRouter, Path, Query
 from . import schemas
 from typing import Optional
-from .exception import ErrorCode
 from .controllers import ProductController
 
 router = APIRouter(prefix="/v1/product", tags=["product"])
@@ -18,8 +17,6 @@ async def create_product(data: schemas.ProductCreate):
                 200: {"model": schemas.ProductResponse, "description": "Get items success"}})
 async def get_product(product_id: str = Path(...)):
     result = await controller.get(product_id)
-    if not result:
-        raise ErrorCode.InvalidProductId()
     return result
 
 @router.put("/edit/{product_id}", status_code=200, responses={
@@ -30,7 +27,7 @@ async def update_product(product_id: str, data: schemas.ProductUpdate):
 
 @router.delete("/delete/{product_id}", status_code=200, responses={
                 200: {"description": "Delete items success"}})
-async def delete_user(product_id: str):
+async def delete_product(product_id: str):
     result = await controller.delete(product_id)
     return result
 

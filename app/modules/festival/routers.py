@@ -2,7 +2,6 @@ from typing import Optional
 from fastapi import APIRouter, Query, Path
 from . import schemas
 from .controllers import EventController, TicketController
-from .exception import ErrorCode
 
 router = APIRouter(prefix="/v1/fes", tags=["festival"])
 
@@ -21,8 +20,6 @@ async def create_event(data: schemas.EventCreate):
                 200: {"model": schemas.EventResponse, "description": "Get items success"}})
 async def get_event(event_id: str = Path(...)):
     result = await event_controller.get(event_id)
-    if not result:
-        raise ErrorCode.EventNotFound()
     return result
 
 

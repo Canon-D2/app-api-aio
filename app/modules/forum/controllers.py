@@ -4,7 +4,8 @@ from .services import thread_crud, post_crud, ThreadServices, PostServices
 
 class ThreadController:
     def __init__(self):
-        self.service = ThreadServices(thread_crud)
+        self.crud = thread_crud
+        self.service = ThreadServices(self.crud)
 
     async def create(self, data): 
         result = await self.service.create(data)
@@ -29,7 +30,8 @@ class ThreadController:
 
 class PostController:
     def __init__(self):
-        self.service = PostServices(post_crud)
+        self.crud = post_crud
+        self.service = PostServices(self.crud)
 
     async def create(self, data):   
         result = await self.service.create(data)

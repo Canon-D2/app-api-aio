@@ -8,48 +8,60 @@ class BaseCRUD:
         self.db = db
         self.collection = db[collection_name]
 
-    async def create(self, data: dict):
+    async def create(self, data: dict) -> dict:
         data["created_at"] = Helper.get_timestamp()
-        user = await self.collection.insert_one(data)
-        result = await self.collection.find_one({"_id": user.inserted_id})
-        result = Helper.object_to_string(result)
+        record = await self.collection.insert_one(data)
+        result = await self.get_by_id(str(record.inserted_id))
         return result
 
-    async def get_by_id(self, _id: str):
+    async def get_by_id(self, _id: str) -> dict:
+        if not Helper.is_object_id(_id): return None
         result = await self.collection.find_one({"_id": ObjectId(_id)})
         result = Helper.object_to_string(result) if result else None 
         return result
 
-    async def update_by_id(self, _id: str, data: dict):
+    async def update_by_id(self, _id: str, data: dict) -> dict:
+        if not Helper.is_object_id(_id): return None
         data["updated_at"] = Helper.get_timestamp()
-        await self.collection.update_one(
-            {"_id": ObjectId(_id)}, {"$set": data}
-        )
-        result = await self.collection.find_one({"_id": ObjectId(_id)})
-        result = Helper.object_to_string(result)
+        await self.collection.update_one({"_id": ObjectId(_id)}, {"$set": data})
+        result = await self.get_by_id(_id)
         return result
 
     async def delete_by_id(self, _id: str):
+        if not Helper.is_object_id(_id): return None
         result = await self.collection.delete_one({"_id": ObjectId(_id)})
         result = {"status": "success"} if result.deleted_count > 0 else {"status": "failed"}
         return result
     
-    async def get_one(self, query: dict):
-        result = await self.collection.find_one(query)
-        return result
-    
-    async def update_one(self, query: dict, data: dict):
-        data["updated_at"] = Helper.get_timestamp()
-        await self.collection.update_one(query, {"$set": data})
-        
-        result = await self.collection.find_one(query)
-        result = Helper.object_to_string(result) if result else None
-        return result
-    
-    async def find_one(self, query: dict):
+    async def get_one_query(self, query: dict) -> dict:
+        query = Helper.string_to_object(query) # Check query contain _id
         result = await self.collection.find_one(query)
         result =  Helper.object_to_string(result) if result else None
         return result
+    
+    async def update_one_query(self, query: dict, data: dict):
+        query = Helper.string_to_object(query) # Check query contain _id
+        data["updated_at"] = Helper.get_timestamp()
+        await self.collection.update_one(query, {"$set": data})
+
+        result = await self.get_one_query(query)
+        return result
+
+    async def update_no_limit(self, query: dict, data: dict, **kwargs):
+        query = Helper.string_to_object(query) # Check query contain _id
+
+        if not any(key.startswith("$") for key in data.keys()):
+            # Case 1: Replace data if not operator
+            data["updated_at"] = Helper.get_timestamp()
+            await self.collection.replace_one(query, data, **kwargs)
+        else:
+            # Case 2: $set, $unset, $push, $pull
+            if "$set" not in data:
+                data["$set"] = {}
+            data["$set"]["updated_at"] = Helper.get_timestamp()
+            await self.collection.update_one(query, data, **kwargs)
+
+        return await self.get_one_query(query)
 
     async def search(
         self,

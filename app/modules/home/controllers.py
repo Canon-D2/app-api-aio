@@ -19,8 +19,8 @@ class HomeController:
                 zipf.writestr(f"{collection_name}.bson", bson_bytes)
         zip_buffer.seek(0)
 
-
-        file_name = f"backup_{int(Helper.get_timestamp())}.zip"
+        datetime = Helper.timestamp_to_date(Helper.get_timestamp())
+        file_name = f"backup_{datetime}.zip"
         result = Response(
             content=zip_buffer.getvalue(),
             media_type="application/zip",

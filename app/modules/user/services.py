@@ -29,14 +29,21 @@ class UserServices:
         if data.get("password"):
             data["password"] = (await auth_services.hash_password(data["password"])).decode()
 
-        return await self.crud.update_by_id(_id, data)
+        result = await self.crud.update_by_id(_id, data)
+        if not result: 
+            raise ErrorCode.InvalidUserId()
+        return result
     
     async def get(self, _id):
         result = await self.crud.get_by_id(_id)
+        if not result: 
+            raise ErrorCode.InvalidUserId()
         return result
 
     async def delete(self, _id):
         result = await self.crud.delete_by_id(_id)
+        if not result: 
+            raise ErrorCode.InvalidUserId()
         return result
 
     async def search(self, query: dict, page: int, limit: int):
