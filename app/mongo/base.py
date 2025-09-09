@@ -92,3 +92,37 @@ class BaseCRUD:
     def _get_sort(self, sort_field: str, is_desc: bool):
         result = [(sort_field, DESCENDING if is_desc else ASCENDING)]
         return result
+
+    async def aggregate_by_pipeline(self, pipeline):
+        documents = self.collection.aggregate(pipeline)
+        if not documents:
+            return None
+        results = {}
+        async for document in documents:
+            results.update(document)
+        return results
+    
+    async def update_all_query(self, query: dict, data: dict):
+        query = Helper.string_to_object(query) 
+        data["updated_at"] = Helper.get_timestamp()
+
+        await self.collection.update_many(query, {"$set": data})
+
+        cursor = self.collection.find(query)
+        results = [Helper.object_to_string(doc) async for doc in cursor]
+        total = len(results)
+
+        result = {"total": total, "results": results}
+        return result
+    
+
+    async def delete_all_query(self, query: dict):
+        query = Helper.string_to_object(query)
+        cursor = self.collection.find(query, {"_id": 1})
+        ids = [str(doc["_id"]) async for doc in cursor]
+
+        result = await self.collection.delete_many(query)
+        total_deleted = result.deleted_count
+
+        result = {"total": total_deleted,"results": ids}
+        return result
