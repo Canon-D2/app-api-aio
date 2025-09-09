@@ -46,3 +46,7 @@ class TicketController:
     async def search(self, query: dict, page: int, limit: int):
         result = await self.service.search(query, page, limit)
         return result
+    
+    async def qr_code(self, ticket_id: str, format: str):
+        result = await self.service.qr_code(ticket_id, format)
+        return result

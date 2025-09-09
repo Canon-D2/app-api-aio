@@ -1,9 +1,11 @@
 from jose import jwt
 import unicodedata, re
+from io import BytesIO
 from bson import ObjectId
-from typing import Optional
+from fastapi import Response
 from zoneinfo import ZoneInfo
-import time, datetime, random, string, secrets
+from typing import Literal, Optional
+import time, datetime, random, string, secrets, base64, qrcode
 from app.auth.config import SECRET_KEY, ALGORITHM
 
 class Helper:
@@ -106,6 +108,24 @@ class Helper:
     def generate_secret_otp(length: int = 6) -> str:
         chars = string.ascii_uppercase + string.digits
         while True:
-            otp = ''.join(secrets.choice(chars) for _ in range(length))
-            if sum(c.isalpha() for c in otp) >= 2 and sum(c.isdigit() for c in otp) >= 2:
-                return otp
+            otp_code = ''.join(secrets.choice(chars) for _ in range(length))
+            if sum(c.isalpha() for c in otp_code) >= 2 and sum(c.isdigit() for c in otp_code) >= 2:
+                return otp_code
+            
+    @staticmethod
+    def generate_qr_code(data: str, format: Literal["base64", "image"]):
+        qr = qrcode.make(data)
+        buf = BytesIO()
+        qr.save(buf, format="PNG")
+        image_bytes = buf.getvalue()
+
+        if format == "base64":
+            b64 = base64.b64encode(image_bytes).decode("utf-8")
+            result = {"data": data,"qr_code": f"data:image/png;base64,{b64}"}
+        else:
+            result = Response(
+                content=image_bytes, 
+                media_type="image/png", 
+                # headers={"Content-Disposition": f"attachment; filename=qr_{data}.png"} # Download
+                )
+        return result

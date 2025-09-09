@@ -104,3 +104,11 @@ class TicketServices:
     async def search(self, query: dict, page: int, limit: int):
         result = await self.crud.search(query, page, limit)
         return result
+    
+    async def qr_code(self, ticket_id: str, format: str):
+        ticket = await self.crud.get_by_id(ticket_id)
+        if not ticket:
+            raise ErrorCode.InvalidTicket("ticket")
+        
+        result = Helper.generate_qr_code(data=ticket.get("qr_token"), format=format)
+        return result

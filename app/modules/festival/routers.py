@@ -91,3 +91,9 @@ async def list_ticket(
 
     result = await ticket_controller.search(query, page, limit)
     return result
+
+@router.get("/ticket/qr/{ticket_id}", status_code=200, responses={
+                200: {"description": "Get items success"}})
+async def get_ticket_qr(ticket_id: str, format: str = Query(enum=["base64", "image"])):
+    result = await ticket_controller.qr_code(ticket_id, format)
+    return result
