@@ -2,7 +2,6 @@ from typing import Optional
 from fastapi import APIRouter, Query, Path
 from . import schemas
 from .controllers import ThreadController, PostController
-from .exception import ErrorCode
 
 router = APIRouter(prefix="/v1/forum", tags=["forum"])
 
