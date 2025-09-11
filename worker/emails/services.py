@@ -7,7 +7,7 @@ from .exception import ErrorCode
 
 class EmailService:
     def __init__(self):
-        template_dir = os.path.join("app", "assets", "templates")
+        template_dir = os.path.join("assets", "templates")
         self.env = Environment(loader=FileSystemLoader(template_dir))
 
 

@@ -16,6 +16,7 @@ from worker.redis.routers import router as redis_router
 
 api_router = APIRouter()
 
+
 # Subscribe router
 api_router.include_router(home_router)
 api_router.include_router(user_router)
