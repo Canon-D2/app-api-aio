@@ -25,9 +25,11 @@ class AuthServices():
     async def encode_access_token(self, data):
         data = data.copy()
         expire_days = (REMEMBER_TOKEN_DAY if data.get("remember_me") else ACCESS_TOKEN_EXPIRE_DAY)
+        
         expire = Helper.get_future_timestamp(days_to_add=expire_days)
-
-        data.update({"expire": expire})
+        
+        data.update({"exp": expire})
+        
         encode = jwt.encode(data, SECRET_KEY, algorithm=ALGORITHM)
         return encode
 

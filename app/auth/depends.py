@@ -11,11 +11,10 @@ security = HTTPBearer()
 async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     token = credentials.credentials
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        expire = payload.get("expire")
-        if expire and Helper.get_timestamp() > expire:
-            raise ErrorCode.TokenExpired()
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])  # Auto check exp
         return payload
+    except jwt.ExpiredSignatureError:
+        raise ErrorCode.TokenExpired()
     except JWTError:
         raise ErrorCode.InvalidToken()
 

@@ -11,7 +11,7 @@ ENV PYTHONUNBUFFERED=1
 # Install build dependencies
 RUN set -eux \
     && apk add --no-cache --virtual .build-adeps build-base \
-    libressl-dev libffi-dev gcc musl-dev python3-dev \
+    openssl-dev libffi-dev gcc musl-dev python3-dev librdkafka-dev \
     && pip install --upgrade pip setuptools wheel \
     && rm -rf /root/.cache/pip
 

@@ -72,6 +72,34 @@ services:
       timeout: 10s
       retries: 3
 
+  kafka:
+    image: bitnami/kafka:3.6.1
+    container_name: kafka
+    restart: unless-stopped
+    ports:
+      - "9092:9092" 
+      - "9094:9094"
+    env_file:
+      - ./env/worker.env
+    volumes:
+      - ./kafka:/bitnami/kafka
+    healthcheck:
+      test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka:9092 --list || exit 1"]
+      interval: 20s
+      timeout: 10s
+      retries: 5
+
+  kafka-ui:
+    image: provectuslabs/kafka-ui:v0.7.2
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      - KAFKA_CLUSTERS_0_NAME=local
+      - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
+    depends_on:
+      - kafka
+
   redis:
     image: redis:7.2-alpine
     restart: on-failure

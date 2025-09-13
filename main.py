@@ -1,10 +1,12 @@
 import sentry_sdk
+from art import tprint
 from fastapi import FastAPI
 from routers import api_router
 from fastapi.openapi.utils import get_openapi
 from worker.sentry.config import DSN_SENTRY, ENVIRONMENT
 from app.middlewares.logging import LoggingMiddleware
 
+tprint("APP-API-AIO", font="slant")
 
 app = FastAPI(
     title="APP-API-AIO",
