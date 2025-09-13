@@ -23,7 +23,7 @@ class ThreadResponse(BaseModel):
     title: str
     author_id: str
     comments: int
-    created_at: int
+    created_at: float
     updated_at: Optional[int] = None
 
 
@@ -63,7 +63,7 @@ class PostResponse(BaseModel):
     attachments: List[str]
     reply_to: Optional[str] = None
     reactions: Dict[str, List[str]]
-    created_at: int
+    created_at: float
     updated_at: Optional[int] = None
 
 

@@ -28,7 +28,7 @@ class InvoiceResponse(BaseModel):
     total_price: float
     type_vat: Optional[str]
     status: str
-    created_at: datetime
+    created_at: float
 
 
 class PaginatedInvoiceResponse(BaseModel):

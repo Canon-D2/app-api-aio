@@ -113,6 +113,11 @@ class Helper:
                 return otp_code
             
     @staticmethod
+    def generate_secret_key(length: int = 64) -> str:
+        result = secrets.token_urlsafe(length)
+        return result
+            
+    @staticmethod
     def generate_qr_code(data: str, format: Literal["base64", "image"]):
         qr = qrcode.make(data)
         buf = BytesIO()
@@ -123,9 +128,7 @@ class Helper:
             b64 = base64.b64encode(image_bytes).decode("utf-8")
             result = {"data": data,"qr_code": f"data:image/png;base64,{b64}"}
         else:
-            result = Response(
-                content=image_bytes, 
-                media_type="image/png", 
-                # headers={"Content-Disposition": f"attachment; filename=qr_{data}.png"} # Download
-                )
+            result = Response(content=image_bytes, media_type="image/png")
+            # headers={"Content-Disposition": f"attachment; filename=qr_{data}.png"} # Download
         return result
+        
