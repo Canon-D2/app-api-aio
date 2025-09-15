@@ -10,7 +10,13 @@ sentry_sdk.init(
     traces_sample_rate=1.0,
 )
 
-if __name__ == "__main__":
+async def main():
     rabbit = RabbitMQHandler()
-    asyncio.run(rabbit.consumer())
-    print("\n[*] Worker is launching")
+    asyncio.create_task(rabbit.consumer())
+
+    print("\n[*] Worker is launching...")
+
+    await asyncio.Event().wait()
+
+if __name__ == "__main__":
+    asyncio.run(main())

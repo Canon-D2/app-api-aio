@@ -3,7 +3,6 @@ from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from jose import jwt, JWTError
 from .config import SECRET_KEY, ALGORITHM
 from .permissions import PERMISSIONS
-from app.utils.helper import Helper
 from .exception import ErrorCode
 
 security = HTTPBearer()

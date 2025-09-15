@@ -78,7 +78,6 @@ services:
     restart: unless-stopped
     ports:
       - "9092:9092" 
-      - "9094:9094"
     env_file:
       - ./env/worker.env
     volumes:

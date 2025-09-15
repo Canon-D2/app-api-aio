@@ -1,24 +1,28 @@
 from fastapi import WebSocket
 from . import schemas
-from .services import chat_service
+from .services import socket_service
+from worker.kafka.controllers import kafka_controller
 
 
 class ChatController:
     def __init__(self):
-        self.service = chat_service
+        self.service = socket_service
 
-    async def websocket_endpoint(self, channel_id: str, websocket: WebSocket):
+    async def chat_realtime(self, channel_id: str, websocket: WebSocket):
+
         token = websocket.headers.get("Authorization", "").replace("Bearer ", "")
-        if not token:
-            return await websocket.close()
+        if not token: return await websocket.close()
 
         try:
             await self.service.connect(channel_id, websocket, token)
             while True:
                 data = schemas.MessageSend(**await websocket.receive_json())
-                await self.service.send_message({"channel_id": channel_id, **data.dict()}, token)
-        except Exception:
-            print("[CONTROLLER] - Websocket Close")
+                # await self.service.send_message({"channel_id": channel_id, **data.dict()}, token) # Send direct
+                await kafka_controller.publish_message(channel_id=channel_id, token=token, message={**data.dict()})
+
+        except Exception as e:
+            print(f"[CONTROLLER] - Websocket Close: {e}")
             await websocket.close()
+
         finally:
             self.service.disconnect(channel_id, websocket)

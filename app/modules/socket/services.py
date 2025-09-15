@@ -76,4 +76,4 @@ class ChatServices:
         return chat_message.dict()
 
 
-chat_service = ChatServices(channels_crud, messages_crud)
+socket_service = ChatServices(channels_crud, messages_crud)
