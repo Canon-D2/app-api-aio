@@ -1,6 +1,6 @@
 from typing import Optional, List, Literal
-from pydantic import BaseModel, EmailStr, Field
-
+from pydantic import BaseModel, EmailStr, Field, validator
+from app.utils.validator import Validator
 
 class UserCreate(BaseModel):
     fullname: str
@@ -14,6 +14,12 @@ class UserCreate(BaseModel):
     address: str
     company: Optional[str] = None
     tax_code: Optional[str] = None
+
+    @validator("password")
+    def check_password(cls, v):
+        if not Validator.is_password_valid(v):
+            raise ValueError("Password must be 8-12 characters, at least 1 uppercase letter, 1 number and 1 special character")
+        return v
 
 
 class UserUpdate(BaseModel):

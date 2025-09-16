@@ -5,6 +5,7 @@ from bson import ObjectId
 from fastapi import Response
 from zoneinfo import ZoneInfo
 from typing import Literal, Optional
+from app.utils.validator import Validator
 import time, datetime, random, string, secrets, base64, qrcode
 from app.auth.config import SECRET_KEY, ALGORITHM
 
@@ -37,24 +38,9 @@ class Helper:
     
     @staticmethod
     def string_to_object(query: dict) -> dict:
-        if "_id" in query and isinstance(query["_id"], str) and Helper.is_object_id(query["_id"]):
+        if "_id" in query and isinstance(query["_id"], str) and Validator.is_object_id(query["_id"]):
             query["_id"] = ObjectId(query["_id"])
         return query
-    
-    @staticmethod
-    def is_object_id(_id: str) -> bool:
-        result =  ObjectId.is_valid(_id)
-        return result
-
-    @staticmethod
-    async def is_email_exists(crud, email: str, exclude_id: str = None) -> bool:
-        if not email: 
-            return False
-        query = {"email": email}
-        if exclude_id:
-            query["_id"] = {"$ne": ObjectId(exclude_id)}
-        existing = await crud.get_one_query(query=query)
-        return existing is not None
     
     @staticmethod
     def get_future_timestamp(days_to_add: int) -> float:

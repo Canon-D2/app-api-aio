@@ -1,6 +1,7 @@
-from pydantic import BaseModel, Field
+from decimal import Decimal
+from bson.decimal128 import Decimal128
+from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Dict, Any, Literal
-
 
 class SerialItem(BaseModel):
     number: str
@@ -52,12 +53,18 @@ class ProductResponse(BaseModel):
     brand: str
     status: Optional[str]
     quantity: int
-    price: float
+    price: Decimal
     images: List[str]
     tags: List[str]
     specs: Optional[Dict[str, Any]] = None
     theme: Optional[str]
     description: List[ProductDescription]
+
+    @validator('price')
+    def convert_decimal(cls, v):
+        if isinstance(v, Decimal128):
+            return v.to_decimal()
+        return v
 
 
 class PaginatedProductResponse(BaseModel):

@@ -1,6 +1,6 @@
 from app.mongo.base import BaseCRUD
 from app.mongo.engine import engine_aio
-from app.utils.helper import Helper
+from app.utils.validator import Validator
 from .exception import ErrorCode
 from app.auth.services import auth_services
 
@@ -13,7 +13,7 @@ class UserServices:
 
     async def create(self, data: dict):
         email = data.get("email")
-        if await Helper.is_email_exists(self.crud, email):
+        if await Validator.is_email_exists(self.crud, email):
             raise ErrorCode.EmailExisted(email)
         
         if data.get("password"):
@@ -23,7 +23,7 @@ class UserServices:
 
     async def update(self, _id: str, data: dict):
         email = data.get("email")
-        if email and await Helper.is_email_exists(self.crud, email, exclude_id=_id):
+        if email and await Validator.is_email_exists(self.crud, email, exclude_id=_id):
             raise ErrorCode.InvalidUserId
         
         if data.get("password"):

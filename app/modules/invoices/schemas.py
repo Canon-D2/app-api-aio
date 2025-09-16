@@ -1,6 +1,7 @@
+from decimal import Decimal
+from bson.decimal128 import Decimal128
 from typing import List, Optional, Literal
-from pydantic import BaseModel, Field
-from datetime import datetime
+from pydantic import BaseModel, Field, validator
 
 
 class InvoiceUpdate(BaseModel):
@@ -13,9 +14,15 @@ class InvoiceUpdate(BaseModel):
 class InvoiceItem(BaseModel):
     product_id: str
     name: str
-    price: float
+    price: Decimal
     quantity: int
     image: Optional[str] = None
+
+    @validator('price')
+    def convert_decimal(cls, v):
+        if isinstance(v, Decimal128):
+            return v.to_decimal()
+        return v
 
 
 class InvoiceResponse(BaseModel):
@@ -25,10 +32,17 @@ class InvoiceResponse(BaseModel):
     address: Optional[str]
     note: Optional[str]
     total_items: int
-    total_price: float
+    total_price: Decimal
     type_vat: Optional[str]
     status: str
     created_at: float
+
+    @validator('total_price')
+    def convert_decimal(cls, v):
+        if isinstance(v, Decimal128):
+            return v.to_decimal()
+        return v
+
 
 
 class PaginatedInvoiceResponse(BaseModel):

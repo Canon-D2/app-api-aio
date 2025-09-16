@@ -1,4 +1,6 @@
-from pydantic import BaseModel, Field
+from decimal import Decimal
+from bson.decimal128 import Decimal128
+from pydantic import BaseModel, Field, validator
 from typing import List, Optional, Literal
 
 
@@ -62,11 +64,17 @@ class TicketResponse(BaseModel):
     event_id: str
     user_id: str
     type: str
-    price: float
+    price: Decimal
     status: Literal["paid", "pending", "canceled"]
     qr_token: str
     check_in: Optional[int] = None
     check_by: Optional[str] = None
+
+    @validator('price')
+    def convert_decimal(cls, v):
+        if isinstance(v, Decimal128):
+            return v.to_decimal()
+        return v
 
 
 class PaginatedTicketResponse(BaseModel):
