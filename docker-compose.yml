@@ -83,8 +83,7 @@ services:
     env_file:
       - ./env/worker.env
     volumes:
-      # - ./kafka:/bitnami/kafka # mount NTFS -> Permission denied
-      - kafka_data:/bitnami/kafka
+      - ./kafka:/bitnami/kafka # mount NTFS
     healthcheck:
       test: ["CMD-SHELL", "kafka-topics.sh --bootstrap-server kafka:9092 --list || exit 1"]
       interval: 20s

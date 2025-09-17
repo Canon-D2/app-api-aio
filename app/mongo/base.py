@@ -2,6 +2,7 @@ import math
 from bson import ObjectId
 from pymongo import ASCENDING, DESCENDING
 from app.utils.helper import Helper
+from app.utils.validator import Validator
 
 class BaseCRUD:
     def __init__(self, collection_name: str, db) -> None:
@@ -15,20 +16,20 @@ class BaseCRUD:
         return result
 
     async def get_by_id(self, _id: str) -> dict:
-        if not Helper.is_object_id(_id): return None
+        if not Validator.is_object_id(_id): return None
         result = await self.collection.find_one({"_id": ObjectId(_id)})
         result = Helper.object_to_string(result) if result else None 
         return result
 
     async def update_by_id(self, _id: str, data: dict) -> dict:
-        if not Helper.is_object_id(_id): return None
+        if not Validator.is_object_id(_id): return None
         data["updated_at"] = Helper.get_timestamp()
         await self.collection.update_one({"_id": ObjectId(_id)}, {"$set": data})
         result = await self.get_by_id(_id)
         return result
 
     async def delete_by_id(self, _id: str):
-        if not Helper.is_object_id(_id): return None
+        if not Validator.is_object_id(_id): return None
         result = await self.collection.delete_one({"_id": ObjectId(_id)})
         result = {"status": "success"} if result.deleted_count > 0 else {"status": "failed"}
         return result
