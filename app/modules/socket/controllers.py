@@ -1,4 +1,4 @@
-from fastapi import WebSocket
+from fastapi import WebSocket, WebSocketDisconnect
 from . import schemas
 from .services import socket_service
 from worker.kafka.controllers import kafka_controller
@@ -20,9 +20,12 @@ class ChatController:
                 # await self.service.send_message({"channel_id": channel_id, **data.dict()}, token) # Send direct
                 await kafka_controller.publish_message(channel_id=channel_id, token=token, message={**data.dict()})
 
+        except WebSocketDisconnect:
+            print(f"[CONTROLLER] - Client disconnected from {channel_id}")
+            
         except Exception as e:
             print(f"[CONTROLLER] - Websocket Close: {e}")
             await websocket.close()
 
-        finally:
+        finally: # Clear memory socket connecting
             self.service.disconnect(channel_id, websocket)
