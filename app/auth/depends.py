@@ -15,7 +15,7 @@ async def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(s
     except jwt.ExpiredSignatureError:
         raise ErrorCode.TokenExpired()
     except JWTError:
-        raise ErrorCode.InvalidToken()
+        raise ErrorCode.InvalidToken() # Wrong signature
 
 def require_permission():
     async def dependency(request: Request, user: dict = Depends(get_current_user)):

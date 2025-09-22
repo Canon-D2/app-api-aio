@@ -11,6 +11,7 @@ from app.modules.forum.routers import router as forum_router
 from app.modules.festival.routers import router as festival_router
 from app.modules.tax.routers import router as tax_router
 from app.modules.socket.routers import router as socket_router
+from app.modules.cronjob.routers import router as cron_router
 from worker.sentry.routers import router as sentry_router
 from worker.redis.routers import router as redis_router
 
@@ -30,5 +31,6 @@ api_router.include_router(forum_router)
 api_router.include_router(festival_router)
 api_router.include_router(tax_router)
 api_router.include_router(socket_router)
+api_router.include_router(cron_router)
 api_router.include_router(sentry_router)
 api_router.include_router(redis_router)

@@ -12,7 +12,7 @@ class LoggingMiddleware(BaseHTTPMiddleware):
         start_time = Helper.get_timestamp()
 
         # Skip certain endpoints (like health checks)
-        skip_paths = ["/v1/home/ping"]
+        skip_paths = ["/docs", "/v1/home/ping"]
         if any(str(request.url).endswith(path) for path in skip_paths):
             return await call_next(request)
 
