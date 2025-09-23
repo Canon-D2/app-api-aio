@@ -3,7 +3,7 @@ from app.mongo.engine import engine_aio
 from app.utils.helper import Helper
 from .exception import ErrorCode
 from .schemas import InvoiceEmail, ItemEmail
-from worker.redis.services import CartService
+from app.modules.redis.services import CartService
 from worker.emails.controllers import EmailController
 from worker.telegram.services import invoice_bot
 from app.modules.user.services import user_crud

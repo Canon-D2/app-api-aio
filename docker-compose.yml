@@ -6,7 +6,7 @@ services:
     image: app-api-aio/api
     restart: on-failure
     command: uvicorn main:app --reload --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers # Development
-    # command: uvicorn main:app --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers # Production
+    # command: uvicorn main:app --workers 2 --host 0.0.0.0 --port 8000 --proxy-headers        # Production
     volumes:
       - ./:/opt/python-projects/app/
     ports:
@@ -105,7 +105,7 @@ services:
     image: redis:7.2-alpine
     restart: on-failure
     env_file:
-      - ./env/worker.env
+      - ./env/app.env
     command: /bin/sh -c "redis-server --requirepass $$REDIS_PASSWORD --appendonly no --save 60 1"
     ports:
       - "6379:6379"

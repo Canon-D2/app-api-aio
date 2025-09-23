@@ -31,3 +31,9 @@ redis://:APP-API-AIO@127.0.0.1:6379/0
 # CREATE CHANNEL AND GET CHANNEL ID BY
 # -> /start bot, add bot in channel (set admin) -> send channel -> get id
 https://api.telegram.org/bot<BOT_TOKEN>/getUpdates
+
+# SSH SERVER AWS
+icacls .\ec2.pem /inheritance:r
+icacls .\ec2.pem /grant:r "$($env:USERNAME):(R)"
+icacls .\ec2.pem
+ssh -i .\ec2.pem ubuntu@<PUBLIC_IP>
