@@ -1,7 +1,7 @@
 import json
-from typing import Optional, Dict, Any, List
 from redis.asyncio import Redis
 from redis.exceptions import RedisError
+from typing import Optional, Dict, Any, List
 
 from .schemas import *
 from .config import REDIS_URL

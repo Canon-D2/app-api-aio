@@ -13,13 +13,10 @@ from app.modules.tax.routers import router as tax_router
 from app.modules.socket.routers import router as socket_router
 from app.modules.cronjob.routers import router as cron_router
 from worker.sentry.routers import router as sentry_router
-from worker.redis.routers import router as redis_router
-
+from app.modules.redis.routers import router as redis_router
 
 api_router = APIRouter()
 
-
-# Subscribe router
 api_router.include_router(home_router)
 api_router.include_router(user_router)
 api_router.include_router(product_router)
