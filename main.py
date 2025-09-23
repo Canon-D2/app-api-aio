@@ -7,6 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from worker.sentry.config import DSN_SENTRY, ENVIRONMENT
 from app.middlewares.logging import LoggingMiddleware
 from worker.kafka.services import kafka_service
+from app.modules.cronjob.services import scheduler, crons_job
 
 tprint("APP-API-AIO", font="slant")
 
@@ -72,7 +73,14 @@ async def startup_event():
     await kafka_service.start_producer()
     await kafka_service.start_consumer()
 
+    scheduler.start()
+    await crons_job.add_all_crons()
+    print("[CRON] Scheduler started and all jobs loaded")
+
 @app.on_event("shutdown")
 async def shutdown_event():
     await kafka_service.stop_consumer()
     await kafka_service.stop_producer()
+
+    scheduler.shutdown()
+    print("[CRON] Scheduler stopped")

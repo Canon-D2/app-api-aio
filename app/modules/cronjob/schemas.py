@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional, Literal, List
+from typing import Optional, List
 
 class CronCreate(BaseModel):
     task: str
@@ -8,8 +8,7 @@ class CronCreate(BaseModel):
     header: Optional[str] = None
     request: Optional[dict] = None
     response: Optional[dict] = None
-    schedule: str
-    type: Literal["cron", "once", "interval"]
+    schedule: str  # m h d M w
     enable: bool
 
 class CronUpdate(BaseModel):
@@ -20,7 +19,6 @@ class CronUpdate(BaseModel):
     request: Optional[dict] = None
     response: Optional[dict] = None
     schedule: Optional[str] = None
-    type: Optional[Literal["cron", "once", "interval"]] = None
     enable: Optional[bool] = None
 
 class CronResponse(BaseModel):
@@ -32,7 +30,6 @@ class CronResponse(BaseModel):
     request: Optional[dict] = None
     response: Optional[dict] = None
     schedule: Optional[str] 
-    type: Optional[Literal["cron", "once", "interval"]]
     enable: Optional[bool] 
     created_at: Optional[float] 
     updated_at: Optional[float] = None
